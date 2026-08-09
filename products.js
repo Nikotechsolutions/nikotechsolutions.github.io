@@ -267,7 +267,7 @@ function renderProducts(items, gridId = 'productsGrid') {
         grid.innerHTML += `
             <div class="product-card">
                 <span class="product-badge">${product.badge}</span>
-                <a href="producto.html?id=${product.id}" style="text-decoration: none; color: inherit; display: block;">
+                <a href="producto.html?id=${product.id}" style="text-decoration: none; color: inherit; display: block; -webkit-tap-highlight-color: transparent;">
                     <img src="${product.image}" alt="${product.title}" class="product-img">
                     <div>
                         <div class="product-rating">${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}</div>
