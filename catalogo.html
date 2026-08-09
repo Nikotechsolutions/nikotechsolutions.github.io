@@ -64,32 +64,31 @@
             <!-- Filtros -->
             <div class="category-filters">
                 <!-- FILTROS Y ORDENAMIENTO -->
-                <div class="catalog-controls" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+<div class="catalog-controls">
     
-                    <!-- Filtros por categoría que ya tienes -->
-                    <div class="category-filters" style="margin-bottom: 0;">
-                        <button class="filter-btn active" onclick="filterCategory('all', this)">Todos</button>
-                        <button class="filter-btn" onclick="filterCategory('laptops', this)">Laptops</button>
-                        <button class="filter-btn" onclick="filterCategory('audio', this)">Audio</button>
-                        <button class="filter-btn" onclick="filterCategory('smarthome', this)">Smart Home</button>
-                        <button class="filter-btn" onclick="filterCategory('perifericos', this)">Periféricos</button>
-                        <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
-                        <button class="filter-btn" onclick="filterCategory('monitores', this)">Monitores</button>
-                    </div>
+    <!-- Categorías -->
+    <div class="category-filters">
+        <button class="filter-btn active" onclick="filterCategory('all', this)">Todos</button>
+        <button class="filter-btn" onclick="filterCategory('laptops', this)">Laptops</button>
+        <button class="filter-btn" onclick="filterCategory('audio', this)">Audio</button>
+        <button class="filter-btn" onclick="filterCategory('smarthome', this)">Smart Home</button>
+        <button class="filter-btn" onclick="filterCategory('perifericos', this)">Periféricos</button>
+        <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
+        <button class="filter-btn" onclick="filterCategory('monitores', this)">Monitores</button>
+    </div>
 
-    <!-- SELECTOR DE ORDEN -->
-    <div class="sort-container" style="display: flex; align-items: center; gap: 8px;">
-        <label for="sortSelect" style="color: var(--text-muted); font-size: 14px;">Ordenar por:</label>
-        <select id="sortSelect" onchange="applySorting()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glow); color: #fff; padding: 8px 14px; border-radius: 20px; outline: none; cursor: pointer; font-size: 14px;">
-            <option value="default" style="background: #0c162c; color: #fff;">Destacados</option>
-            <option value="price-low" style="background: #0c162c; color: #fff;">Precio: Menor a Mayor</option>
-            <option value="price-high" style="background: #0c162c; color: #fff;">Precio: Mayor a Menor</option>
-            <option value="name-asc" style="background: #0c162c; color: #fff;">Nombre: A - Z</option>
+    <!-- Selector de Orden -->
+    <div class="sort-container">
+        <label for="sortSelect">Ordenar por:</label>
+        <select id="sortSelect" onchange="applySorting()" oninput="applySorting()">
+            <option value="default">Destacados</option>
+            <option value="price-low">Precio: Menor a Mayor</option>
+            <option value="price-high">Precio: Mayor a Menor</option>
+            <option value="name-asc">Nombre: A - Z</option>
         </select>
     </div>
 
 </div>
-
             <!-- Grilla de Productos (se llena con products.js) -->
             <div class="products-grid" id="productsGrid"></div>
         </section>
