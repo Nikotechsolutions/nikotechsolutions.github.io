@@ -1,63 +1,236 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalle del Producto | Nikotechsolutions</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto | Nikotechsolutions</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .detail-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .detail-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-image-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .detail-image-container img {
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .detail-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .detail-badge {
+            align-self: flex-start;
+            background: #00f2fe;
+            color: #000;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .detail-title {
+            font-size: 2.2rem;
+            margin: 0;
+            color: var(--text-color, #fff);
+        }
+
+        .detail-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .detail-price-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00f2fe;
+        }
+
+        .detail-old-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 1.3rem;
+        }
+
+        .detail-description {
+            line-height: 1.7;
+            color: #ccc;
+            font-size: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .btn-add-large {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #000;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-add-large:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 16px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Tu Header/Navbar aquí (mismo que en catalogo.html) -->
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <a href="index.html" class="logo">⚡ Nikotechsolutions</a>
+        
+        <nav class="nav-links" id="navLinks">
+            <a href="index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="ofertas.html">Ofertas</a>
+            <a href="contacto.html">Contacto</a>
+        </nav>
 
-  <main class="container product-detail-container" style="padding: 40px 20px; display: flex; gap: 40px; color: #fff;">
-    <div class="product-image-col" style="flex: 1;">
-      <img id="detail-image" src="" alt="" style="width: 100%; border-radius: 12px; object-fit: cover;">
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="icon-btn" onclick="toggleCart()"><i class="fa-solid fa-cart-shopping"></i> <span id="cartCount">0</span></button>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- SEARCH BOX -->
+    <div class="search-box" id="searchBox">
+        <input type="text" id="searchInput" placeholder="Buscar productos..." onkeyup="filterProducts()">
     </div>
-    <div class="product-info-col" style="flex: 1;">
-      <span id="detail-badge" class="badge"></span>
-      <h1 id="detail-title" style="font-size: 2rem; margin: 10px 0;"></h1>
-      <p id="detail-price" style="font-size: 1.5rem; color: #00f2fe; font-weight: bold;"></p>
-      <p id="detail-description" style="margin: 20px 0; color: #ccc; line-height: 1.6;"></p>
-      
-      <button id="detail-add-btn" class="btn-primary" style="padding: 12px 24px; cursor: pointer;">
-        Agregar al Carrito
-      </button>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <div id="product-content">
+            <!-- Se llena dinámicamente con JS -->
+        </div>
+    </main>
+
+    <!-- CARRITO MODAL -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>Tu Carrito</h2>
+                <button class="close-btn" onclick="toggleCart()">&times;</button>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-footer">
+                <div class="cart-total-row">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0.00</span>
+                </div>
+                <button class="checkout-btn" onclick="checkoutWhatsApp()">Comprar por WhatsApp</button>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <script src="products.js"></script>
-  <script>
-    // 1. Obtener el ID del producto desde la URL (?id=X)
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get('id'));
+    <script src="products.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+            const container = document.getElementById('product-content');
 
-    // 2. Buscar el producto en la lista global 'products'
-    const product = products.find(p => p.id === productId);
+            const product = products.find(p => p.id === productId);
 
-    if (product) {
-      document.title = `${product.title} | Nikotechsolutions`;
-      document.getElementById('detail-image').src = product.image;
-      document.getElementById('detail-image').alt = product.title;
-      document.getElementById('detail-title').textContent = product.title;
-      document.getElementById('detail-price').textContent = `$${product.price}`;
-      document.getElementById('detail-description').textContent = product.description || 'Sin descripción disponible por el momento.';
-      
-      if (product.badge) {
-        document.getElementById('detail-badge').textContent = product.badge;
-      } else {
-        document.getElementById('detail-badge').style.display = 'none';
-      }
+            if (product) {
+                document.title = `${product.title} | Nikotechsolutions`;
+                const oldPriceHtml = product.oldPrice 
+                    ? `<span class="detail-old-price">$${product.oldPrice.toFixed(2)}</span>` 
+                    : '';
 
-      // Evento para agregar al carrito desde el detalle
-      document.getElementById('detail-add-btn').addEventListener('click', () => {
-        if (typeof addToCart === 'function') {
-          addToCart(product.id);
-        }
-      });
-    } else {
-      document.querySelector('main').innerHTML = '<h2>Producto no encontrado</h2><a href="catalogo.html">Volver al catálogo</a>';
-    }
-  </script>
+                container.innerHTML = `
+                    <div class="detail-wrapper">
+                        <div class="detail-image-container">
+                            <img src="${product.image}" alt="${product.title}">
+                        </div>
+                        <div class="detail-info">
+                            ${product.badge ? `<span class="detail-badge">${product.badge}</span>` : ''}
+                            <h1 class="detail-title">${product.title}</h1>
+                            <div class="detail-rating">
+                                ${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}
+                            </div>
+                            <div class="detail-price-box">
+                                ${oldPriceHtml}
+                                <span>$${product.price.toFixed(2)}</span>
+                            </div>
+                            <p class="detail-description">${product.description || 'Sin descripción disponible.'}</p>
+                            <div class="detail-actions">
+                                <button class="btn-add-large" onclick="addToCart(${product.id})">
+                                    <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                                </button>
+                                <a href="catalogo.html" class="btn-back">
+                                    <i class="fa-solid fa-arrow-left"></i> Volver al Catálogo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 80px 20px;">
+                        <h2>Producto no encontrado</h2>
+                        <p style="color: #888; margin: 15px 0 25px 0;">El producto que buscas no existe o ha sido removido.</p>
+                        <a href="catalogo.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Volver al Catálogo</a>
+                    </div>
+                `;
+            }
+        });
+    </script>
 </body>
 </html>
