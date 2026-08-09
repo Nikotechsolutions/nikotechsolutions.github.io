@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del Producto | Nikotechsolutions</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Tu Header/Navbar aquí (mismo que en catalogo.html) -->
+
+  <main class="container product-detail-container" style="padding: 40px 20px; display: flex; gap: 40px; color: #fff;">
+    <div class="product-image-col" style="flex: 1;">
+      <img id="detail-image" src="" alt="" style="width: 100%; border-radius: 12px; object-fit: cover;">
+    </div>
+    <div class="product-info-col" style="flex: 1;">
+      <span id="detail-badge" class="badge"></span>
+      <h1 id="detail-title" style="font-size: 2rem; margin: 10px 0;"></h1>
+      <p id="detail-price" style="font-size: 1.5rem; color: #00f2fe; font-weight: bold;"></p>
+      <p id="detail-description" style="margin: 20px 0; color: #ccc; line-height: 1.6;"></p>
+      
+      <button id="detail-add-btn" class="btn-primary" style="padding: 12px 24px; cursor: pointer;">
+        Agregar al Carrito
+      </button>
+    </div>
+  </main>
+
+  <script src="products.js"></script>
+  <script>
+    // 1. Obtener el ID del producto desde la URL (?id=X)
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = parseInt(urlParams.get('id'));
+
+    // 2. Buscar el producto en la lista global 'products'
+    const product = products.find(p => p.id === productId);
+
+    if (product) {
+      document.title = `${product.title} | Nikotechsolutions`;
+      document.getElementById('detail-image').src = product.image;
+      document.getElementById('detail-image').alt = product.title;
+      document.getElementById('detail-title').textContent = product.title;
+      document.getElementById('detail-price').textContent = `$${product.price}`;
+      document.getElementById('detail-description').textContent = product.description || 'Sin descripción disponible por el momento.';
+      
+      if (product.badge) {
+        document.getElementById('detail-badge').textContent = product.badge;
+      } else {
+        document.getElementById('detail-badge').style.display = 'none';
+      }
+
+      // Evento para agregar al carrito desde el detalle
+      document.getElementById('detail-add-btn').addEventListener('click', () => {
+        if (typeof addToCart === 'function') {
+          addToCart(product.id);
+        }
+      });
+    } else {
+      document.querySelector('main').innerHTML = '<h2>Producto no encontrado</h2><a href="catalogo.html">Volver al catálogo</a>';
+    }
+  </script>
+</body>
+</html>
