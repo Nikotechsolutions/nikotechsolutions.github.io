@@ -7,10 +7,6 @@
 
 /* ---------------------------------------------------------
    1. CATÁLOGO DE PRODUCTOS
-   Para agregar un producto nuevo, copia un bloque { ... },
-   pégalo antes del cierre "];" y cambia sus datos.
-   Categorías disponibles: laptops, audio, smarthome,
-   perifericos, gaming, monitores
    --------------------------------------------------------- */
 const products = [
     {
@@ -20,7 +16,8 @@ const products = [
         price: 173.90,
         badge: "Más Vendido",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500"
+        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500",
+        description: "Audífonos de alta fidelidad con cancelación activa de ruido, micrófono omnidireccional retráctil y sonido envolvente 7.1. Diseñados para largas sesiones de juego con sus almohadillas de espuma viscoelástica súper cómodas."
     },
     {
         id: 2,
@@ -29,7 +26,8 @@ const products = [
         price: 899.00,
         badge: "OLED 2.8K",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1664575196412-ed801e8333a1?w=500"
+        image: "https://images.unsplash.com/photo-1664575196412-ed801e8333a1?w=500",
+        description: "Laptop ultraligera equipada con pantalla OLED 2.8K de 90Hz, procesador de última generación, 16GB RAM y 512GB SSD NVMe. Ideal para creadores de contenido y profesionales en movimiento."
     },
     {
         id: 3,
@@ -38,7 +36,8 @@ const products = [
         price: 119.90,
         badge: "Novedad",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=500"
+        image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=500",
+        description: "Altavoz inteligente con asistente de voz integrado, audio omnidireccional de 360 grados y control de dispositivos del hogar inteligente. Compatible con Alexa y Google Assistant."
     },
     {
         id: 4,
@@ -48,7 +47,8 @@ const products = [
         oldPrice: 115.00,
         badge: "-30% OFF",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=500"
+        image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=500",
+        description: "Reloj inteligente resistente al agua (IP68) con monitor de ritmo cardíaco, oxímetro, seguimiento del sueño y más de 30 modos deportivos. Batería de larga duración de hasta 10 días."
     },
     {
         id: 5,
@@ -57,7 +57,8 @@ const products = [
         price: 65.00,
         badge: "Gamer",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500"
+        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
+        description: "Teclado mecánico completo con switches azules de respuesta táctil y sonora rápida, retroiluminación RGB personalizable con múltiples efectos y chasis de aluminio duradero."
     },
     {
         id: 6,
@@ -66,7 +67,8 @@ const products = [
         price: 45.00,
         badge: "Precisión",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500"
+        image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500",
+        description: "Mouse ergonómico para eSports con sensor óptico ajustable hasta 16,000 DPI, 7 botones programables e iluminación RGB customizable mediante software."
     },
     {
         id: 7,
@@ -75,7 +77,8 @@ const products = [
         price: 749.00,
         badge: "Nuevo",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1664575196412-ed801e8333a1?w=500"
+        image: "https://images.unsplash.com/photo-1664575196412-ed801e8333a1?w=500",
+        description: "Diseño elegante en aluminio de solo 1.3kg de peso, pantalla Full HD IPS de 15.6 pulgadas, batería de hasta 12 horas de duración y carga rápida mediante USB-C."
     },
     {
         id: 8,
@@ -84,7 +87,8 @@ const products = [
         price: 39.90,
         badge: "Económico",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500"
+        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500",
+        description: "Audífonos inalámbricos Bluetooth 5.3 compactos con bajos potentes, resistencia al sudor IPX5 y hasta 24 horas de reproducción total con el estuche de carga."
     },
     {
         id: 9,
@@ -93,7 +97,8 @@ const products = [
         price: 19.90,
         badge: "Hogar Inteligente",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=500"
+        image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=500",
+        description: "Foco inteligente LED regulable con 16 millones de colores. No requiere hub, se conecta directamente a tu red WiFi y se controla mediante App o comandos de voz."
     },
     {
         id: 10,
@@ -103,7 +108,8 @@ const products = [
         oldPrice: 69.90,
         badge: "-20% OFF",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=500"
+        image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=500",
+        description: "Cámara de vigilancia para interiores con visión nocturna por infrarrojos, detección de movimiento con IA, audio bidireccional y rotación horizontal de 360°."
     },
     {
         id: 11,
@@ -112,7 +118,8 @@ const products = [
         price: 22.00,
         badge: "XL",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500"
+        image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500",
+        description: "Alfombrilla de mouse de tamaño extendido (900x400mm) con base de goma antideslizante, bordes cosidos reforzados y superficie de microfibra de alta velocidad."
     },
     {
         id: 12,
@@ -121,7 +128,8 @@ const products = [
         price: 249.00,
         badge: "Nuevo",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1636487658609-28282bb5a3a0?w=500"
+        image: "https://images.unsplash.com/photo-1636487658609-28282bb5a3a0?w=500",
+        description: "Silla ergonómica de alta calidad con cojín lumbar y cervical ajustables, reposabrazos 3D, reclinación de hasta 160° y pistón de gas Clase 4 de alta resistencia."
     },
     {
         id: 13,
@@ -131,7 +139,8 @@ const products = [
         oldPrice: 109.90,
         badge: "-18% OFF",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500"
+        image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500",
+        description: "Micrófono condensador de estudio ideal para streaming, podcasting y llamadas. Inclución de patrón polar cardioide, botón de silenciamiento rápido (tap-to-mute) y filtro pop incorporado."
     },
     {
         id: 14,
@@ -140,7 +149,8 @@ const products = [
         price: 289.00,
         badge: "Nuevo",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1636487658609-28282bb5a3a0?w=500"
+        image: "https://images.unsplash.com/photo-1636487658609-28282bb5a3a0?w=500",
+        description: "Monitor de juegos curvo 1500R de 27 pulgadas, tasa de refresco ultra rápida de 165Hz, tiempo de respuesta de 1ms y compatibilidad con FreeSync / G-Sync."
     },
     {
         id: 15,
@@ -149,7 +159,8 @@ const products = [
         price: 34.90,
         badge: "Multipuerto",
         rating: 4,
-        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500"
+        image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
+        description: "Adaptador multipuerto USB-C fabricado en aluminio con salida HDMI 4K, 3 puertos USB 3.0, lector de tarjetas SD/MicroSD y puerto de carga Power Delivery de hasta 100W."
     }
 ];
 
@@ -220,7 +231,6 @@ function checkoutWhatsApp() {
         return;
     }
 
-    // Cambia este número por tu número real de WhatsApp con código de país (ej: 573001234567)
     const phoneNumber = "573000000000";
 
     let message = "¡Hola NikotechSolution! Quisiera realizar el siguiente pedido:\n\n";
@@ -257,11 +267,13 @@ function renderProducts(items, gridId = 'productsGrid') {
         grid.innerHTML += `
             <div class="product-card">
                 <span class="product-badge">${product.badge}</span>
-                <img src="${product.image}" alt="${product.title}" class="product-img">
-                <div>
-                    <div class="product-rating">${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}</div>
-                    <h3 class="product-title">${product.title}</h3>
-                </div>
+                <a href="producto.html?id=${product.id}" style="text-decoration: none; color: inherit; display: block;">
+                    <img src="${product.image}" alt="${product.title}" class="product-img">
+                    <div>
+                        <div class="product-rating">${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}</div>
+                        <h3 class="product-title">${product.title}</h3>
+                    </div>
+                </a>
                 <div class="product-bottom">
                     <span>${oldPriceHtml}<span class="product-price">$${product.price.toFixed(2)}</span></span>
                     <button class="add-cart-btn" onclick="addToCart(${product.id})">
@@ -321,7 +333,7 @@ function toggleSearch() {
 }
 
 /* ---------------------------------------------------------
-   6. INICIALIZACIÓN COMÚN (se ejecuta en todas las páginas)
+   6. INICIALIZACIÓN COMÚN
    --------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
