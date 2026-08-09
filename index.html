@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NikoTechSolution | Tienda de Tecnología & Gaming</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="products.js"></script>
+
+</head>
+<body>
+    
+    <!-- Header & Navegación -->
+<!-- Header & Navegación Responsiva -->
+<header>
+    <div class="container nav-container">
+        <!-- Logo -->
+        <a href="index.html" class="brand-logo">
+            <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i>
+            <span style="color: #fff;">Nikotech<span style="color: var(--accent-cyan); text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);">solutions</span></span>
+        </a>
+
+        <!-- Enlaces del Menú -->
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="catalogo.html">Catálogo</a></li>
+            <li><a href="ofertas.html">Ofertas</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+
+        <!-- Acciones del Header -->
+        <div class="header-actions">
+            <!-- Buscador (Lupita) -->
+            <div class="search-box" id="searchBox">
+                <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
+                <input type="text" id="searchInput" placeholder="Buscar..." onkeyup="filterProducts()">
+            </div>
+
+            <!-- Carrito -->
+            <div class="cart-btn" onclick="toggleCart()">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <div class="cart-count" id="cartCount">0</div>
+            </div>
+
+            <!-- Botón Menú Hamburguesa (3 Líneas) -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</header>
+<!-- Banner Principal (Slider Automático) -->
+<section class="hero">
+    <div class="container hero-slider">
+        
+        <!-- Diapositiva 1 -->
+        <div class="slide active">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <h1>LA REVOLUCIÓN TECNOLÓGICA EN TUS MANOS.</h1>
+                    <p>Explora las últimas innovaciones en laptops gaming, dispositivos de audio y gadgets inteligentes.</p>
+                    <a href="catalogo.html" class="btn-primary">
+                        EXPLORAR CATÁLOGO <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800" alt="Setup Gaming NikoTech">
+                </div>
+            </div>
+        </div>
+
+        <!-- Diapositiva 2 -->
+        <div class="slide">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <h1 style="color: var(--accent-cyan);">LAPTOPS GAMING DE ÚLTIMA GENERACIÓN.</h1>
+                    <p>Potencia pura con procesadores de alto rendimiento y pantallas OLED de 240Hz.</p>
+                    <a href="catalogo.html" class="btn-primary">
+                        VER LAPTOPS <i class="fa-solid fa-laptop"></i>
+                    </a>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800" alt="Laptops Nikotech">
+                </div>
+            </div>
+        </div>
+
+        <!-- Diapositiva 3 -->
+        <div class="slide">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <h1 style="color: var(--accent-green);">SMARTWATCH CYBER-X EN DESCUENTO.</h1>
+                    <p>Aprovecha un 30% OFF en relojes inteligentes con monitoreo biométrico por IA.</p>
+                    <a href="ofertas.html" class="btn-primary">
+                        VER OFERTA <i class="fa-solid fa-tag"></i>
+                    </a>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800" alt="Oferta Smartwatch">
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicadores (Puntos del Slider) -->
+        <div class="slider-dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Sección de Catálogo -->
+    <section class="categories container" id="catalogo">
+        <h2 class="section-title">Nuestros Productos</h2>
+
+        <!-- Filtros -->
+        <div class="category-filters">
+            <button class="filter-btn active" onclick="filterCategory('all', this)">Todos</button>
+            <button class="filter-btn" onclick="filterCategory('laptops', this)">Laptops</button>
+            <button class="filter-btn" onclick="filterCategory('audio', this)">Audio</button>
+            <button class="filter-btn" onclick="filterCategory('smarthome', this)">Smart Home</button>
+            <button class="filter-btn" onclick="filterCategory('perifericos', this)">Periféricos</button>
+            <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
+            <button class="filter-btn" onclick="filterCategory('monitores', this)">Monitores</button>
+        </div>
+
+        <!-- Grilla de Productos -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Los productos se cargan dinámicamente con JavaScript -->
+        </div>
+    </section>
+
+    <!-- Oferta del Día -->
+    <section class="container" id="ofertas">
+        <div class="deal-banner">
+            <div class="deal-info">
+                <span style="color: var(--accent-green); font-weight: 700; font-size: 14px;">OFERTA LIMITADA</span>
+                <h3>Smartwatch Pro Cyber-X</h3>
+                <p style="color: var(--text-muted);">Monitoreo de salud AI, pantalla AMOLED y resistencia al agua 50m.</p>
+                <div class="countdown">
+                    <div class="time-box"><span id="hours">07</span><label>Horas</label></div>
+                    <div class="time-box"><span id="minutes">45</span><label>Min</label></div>
+                    <div class="time-box"><span id="seconds">12</span><label>Seg</label></div>
+                </div>
+            </div>
+            <div>
+                <button class="btn-primary" onclick="addToCart(4)">
+                    COMPRAR AHORA ($79.90)
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Drawer (Carrito) -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3>Tu Carrito</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items del carrito -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal" style="color: var(--accent-cyan);">$0.00</span>
+            </div>
+            <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contacto">
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <a href="#" class="brand-logo">
+                    <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i>
+                     <span style="color: #fff;">Nikotech<span style="color: var(--accent-cyan); text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);">solutions</span></span>
+                </a>
+                <p>Tu tienda de confianza para productos tecnológicos de alta calidad con envíos rápidos y garantía extendida.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="color: #fff; margin-bottom: 15px;">Enlaces</h4>
+                <p><a href="#" style="color: var(--text-muted); text-decoration: none;">Garantías</a></p>
+                <p><a href="#" style="color: var(--text-muted); text-decoration: none;">Métodos de Pago</a></p>
+                <p><a href="#" style="color: var(--text-muted); text-decoration: none;">Términos y Condiciones</a></p>
+            </div>
+            <div>
+                <h4 style="color: #fff; margin-bottom: 15px;">Contacto</h4>
+                <p><i class="fa-solid fa-envelope"></i> ventas@nikotechsolution.com</p>
+                <p><i class="fa-solid fa-phone"></i> +57 300 000 0000</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 NikoTechSolution. Todos los derechos reservados. Alojadado en GitHub Pages.</p>
+        </div>
+    </footer>
+
+    <!-- Script Principal -->
+    <script>
+        /* =========================================================
+             LÓGICA DEL CARRUSEL / SLIDER AUTOMÁTICO
+           ========================================================= */
+let currentSlideIndex = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+const slideIntervalTime = 5000; // Cambia cada 5 segundos (5000ms)
+let slideTimer;
+
+function showSlide(index) {
+    // Reinicia las clases de las diapositivas y puntos
+    slides.forEach(slide => slide.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+
+    // Ajusta el índice si sobrepasa los límites
+    if (index >= slides.length) currentSlideIndex = 0;
+    if (index < 0) currentSlideIndex = slides.length - 1;
+
+    // Activa la diapositiva y el punto actual
+    slides[currentSlideIndex].classList.add('active');
+    dots[currentSlideIndex].classList.add('active');
+}
+
+function nextSlide() {
+    currentSlideIndex++;
+    showSlide(currentSlideIndex);
+}
+
+function currentSlide(index) {
+    currentSlideIndex = index;
+    showSlide(currentSlideIndex);
+    resetTimer(); // Reinicia el temporizador si el usuario hace clic en un punto
+}
+
+function startTimer() {
+    slideTimer = setInterval(nextSlide, slideIntervalTime);
+}
+
+function resetTimer() {
+    clearInterval(slideTimer);
+    startTimer();
+}
+
+// Iniciar el carrusel al cargar la página
+startTimer();
+
+// Carga inicial de productos (usa el catálogo de products.js)
+renderProducts(products);
+    </script>
+</body>
+</html>
