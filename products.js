@@ -262,8 +262,12 @@ function renderProducts(items, gridId = 'productsGrid') {
         return;
     }
 
+    // Si estamos en el inicio (index.html), solo tomamos los primeros 6 productos
+    const isIndex = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
+    const productsToRender = (isIndex && gridId === 'productsGrid') ? items.slice(0, 6) : items;
+
     grid.innerHTML = '';
-    items.forEach(product => {
+    productsToRender.forEach(product => {
         const oldPriceHtml = product.oldPrice
             ? `<span style="text-decoration:line-through; color:var(--text-muted); font-size:14px; margin-right:6px;">$${product.oldPrice.toFixed(2)}</span>`
             : '';
