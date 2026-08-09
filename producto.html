@@ -9,7 +9,7 @@
     <style>
         .detail-wrapper {
             max-width: 1100px;
-            margin: 60px auto;
+            margin: 40px auto;
             padding: 0 20px;
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -20,14 +20,14 @@
         @media (max-width: 768px) {
             .detail-wrapper {
                 grid-template-columns: 1fr;
-                margin: 30px auto;
+                margin: 20px auto;
             }
         }
 
         .detail-image-container {
             position: relative;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-card, #0c162c);
+            border: 1px solid var(--border-glow, rgba(0, 242, 254, 0.25));
             border-radius: 16px;
             padding: 20px;
             text-align: center;
@@ -35,7 +35,7 @@
 
         .detail-image-container img {
             width: 100%;
-            max-height: 450px;
+            max-height: 400px;
             object-fit: contain;
             border-radius: 12px;
         }
@@ -48,22 +48,24 @@
 
         .detail-badge {
             align-self: flex-start;
-            background: #00f2fe;
-            color: #000;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--accent-green, #10b981);
+            color: var(--accent-green, #10b981);
             font-weight: bold;
             padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
         }
 
         .detail-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin: 0;
             color: #fff;
         }
 
         .detail-rating {
-            color: #ffd700;
+            color: #f59e0b;
             font-size: 1.2rem;
         }
 
@@ -72,20 +74,20 @@
             align-items: center;
             gap: 12px;
             font-size: 2rem;
-            font-weight: bold;
-            color: #00f2fe;
+            font-weight: 800;
+            color: var(--accent-cyan, #00f2fe);
         }
 
         .detail-old-price {
             text-decoration: line-through;
-            color: #888;
-            font-size: 1.3rem;
+            color: var(--text-muted, #94a3b8);
+            font-size: 1.2rem;
         }
 
         .detail-description {
-            line-height: 1.7;
-            color: #ccc;
-            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-muted, #94a3b8);
+            font-size: 0.95rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px 0;
@@ -95,66 +97,79 @@
             display: flex;
             gap: 16px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .btn-add-large {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            background: linear-gradient(90deg, var(--accent-cyan, #00f2fe), #00a8ff);
             color: #000;
             border: none;
             padding: 14px 28px;
-            border-radius: 8px;
+            border-radius: 30px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
-            transition: transform 0.2s ease;
+            transition: 0.3s;
         }
 
         .btn-add-large:hover {
             transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
         }
 
         .btn-back {
             background: transparent;
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 14px 24px;
-            border-radius: 8px;
+            border-radius: 30px;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             font-size: 0.95rem;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            border-color: var(--accent-cyan, #00f2fe);
+            color: var(--accent-cyan, #00f2fe);
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER / NAVBAR (ESTRUCTURA ORIGINAL) -->
-    <header class="header">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-bolt"></i> Nikotechsolutions
+    <!-- HEADER IDÉNTICO A INDEX Y CATÁLOGO -->
+    <header>
+        <div class="container nav-container">
+            <a href="index.html" class="brand-logo">
+                <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> Nikotech<span>solutions</span>
             </a>
 
-            <nav class="nav-links" id="navLinks">
-                <a href="index.html">Inicio</a>
-                <a href="catalogo.html">Catálogo</a>
-                <a href="ofertas.html">Ofertas</a>
-                <a href="contacto.html">Contacto</a>
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="catalogo.html">Catálogo</a></li>
+                    <li><a href="ofertas.html">Ofertas</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
             </nav>
 
-            <div class="nav-icons">
-                <button class="icon-btn" onclick="toggleSearch()" title="Buscar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-                <button class="icon-btn cart-icon-btn" onclick="toggleCart()" title="Carrito">
+            <div class="header-actions">
+                <div class="search-box" id="searchBox">
+                    <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar..." onkeyup="filterProducts()">
+                </div>
+                
+                <button class="cart-btn" onclick="toggleCart()">
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <span class="cart-badge" id="cartCount">0</span>
+                    <span class="cart-count" id="cartCount">0</span>
                 </button>
+
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -162,33 +177,28 @@
         </div>
     </header>
 
-    <!-- SEARCH BOX -->
-    <div class="search-box" id="searchBox">
-        <input type="text" id="searchInput" placeholder="Buscar productos..." onkeyup="filterProducts()">
-    </div>
-
-    <!-- MAIN CONTENT -->
+    <!-- DETALLE DE PRODUCTO -->
     <main>
         <div id="product-content">
-            <!-- Se carga con JS -->
+            <!-- Cargado vía JS -->
         </div>
     </main>
 
-    <!-- CARRITO MODAL -->
+    <!-- MODAL CARRITO -->
     <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
-            <div class="cart-header">
-                <h2>Tu Carrito</h2>
-                <button class="close-btn" onclick="toggleCart()">&times;</button>
+        <div class="cart-header">
+            <h3>Tu Carrito</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
             </div>
-            <div class="cart-items" id="cartItems"></div>
-            <div class="cart-footer">
-                <div class="cart-total-row">
-                    <span>Total:</span>
-                    <span id="cartTotal">$0.00</span>
-                </div>
-                <button class="checkout-btn" onclick="checkoutWhatsApp()">Comprar por WhatsApp</button>
-            </div>
+            <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Comprar por WhatsApp
+            </button>
         </div>
     </div>
 
@@ -238,7 +248,7 @@
                 container.innerHTML = `
                     <div style="text-align: center; padding: 80px 20px;">
                         <h2>Producto no encontrado</h2>
-                        <p style="color: #888; margin: 15px 0 25px 0;">El producto que buscas no existe o ha sido removido.</p>
+                        <p style="color: var(--text-muted); margin: 15px 0 25px 0;">El producto buscado no existe.</p>
                         <a href="catalogo.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Volver al Catálogo</a>
                     </div>
                 `;
