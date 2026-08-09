@@ -1049,3 +1049,19 @@ a.info-card:hover {
     width: 100%;
   }
 }
+/* Corrección de enlaces de producto en tarjetas */
+.product-link {
+  text-decoration: none !important;
+  color: inherit !important;
+  display: block;
+  cursor: pointer;
+}
+
+.product-link .product-title {
+  color: #ffffff !important;
+  transition: color 0.2s ease;
+}
+
+.product-link:hover .product-title {
+  color: var(--accent-cyan) !important;
+}
