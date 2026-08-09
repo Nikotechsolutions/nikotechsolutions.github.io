@@ -248,8 +248,11 @@ function checkoutWhatsApp() {
 }
 
 /* ---------------------------------------------------------
-   3. RENDERIZADO DE PRODUCTOS (usado en index y catalogo)
+   3. RENDERIZADO, FILTRADO Y ORDENAMIENTO DE PRODUCTOS
    --------------------------------------------------------- */
+let currentCategory = 'all';
+let currentProducts = [...products];
+
 function renderProducts(items, gridId = 'productsGrid') {
     const grid = document.getElementById(gridId);
     if (!grid) return;
@@ -267,7 +270,7 @@ function renderProducts(items, gridId = 'productsGrid') {
         grid.innerHTML += `
             <div class="product-card">
                 <span class="product-badge">${product.badge}</span>
-                <a href="producto.html?id=${product.id}" style="text-decoration: none; color: inherit; display: block; -webkit-tap-highlight-color: transparent;">
+                <a href="producto.html?id=${product.id}" class="product-link">
                     <img src="${product.image}" alt="${product.title}" class="product-img">
                     <div>
                         <div class="product-rating">${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}</div>
@@ -276,7 +279,7 @@ function renderProducts(items, gridId = 'productsGrid') {
                 </a>
                 <div class="product-bottom">
                     <span>${oldPriceHtml}<span class="product-price">$${product.price.toFixed(2)}</span></span>
-                    <button class="add-cart-btn" onclick="addToCart(${product.id})">
+                    <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(${product.id})">
                         <i class="fa-solid fa-cart-plus"></i> Agregar
                     </button>
                 </div>
@@ -289,18 +292,41 @@ function filterCategory(category, btnElement, gridId = 'productsGrid') {
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     if (btnElement) btnElement.classList.add('active');
 
+    currentCategory = category;
+
     if (category === 'all') {
-        renderProducts(products, gridId);
+        currentProducts = [...products];
     } else {
-        renderProducts(products.filter(p => p.category === category), gridId);
+        currentProducts = products.filter(p => p.category === category);
     }
+
+    applySorting(gridId);
 }
 
 function filterProducts(gridId = 'productsGrid') {
     const input = document.getElementById('searchInput');
     if (!input) return;
     const query = input.value.toLowerCase();
-    renderProducts(products.filter(p => p.title.toLowerCase().includes(query)), gridId);
+    
+    currentProducts = products.filter(p => p.title.toLowerCase().includes(query));
+    applySorting(gridId);
+}
+
+function applySorting(gridId = 'productsGrid') {
+    const sortSelect = document.getElementById('sortSelect');
+    const sortOption = sortSelect ? sortSelect.value : 'default';
+
+    let sortedList = [...currentProducts];
+
+    if (sortOption === 'price-low') {
+        sortedList.sort((a, b) => a.price - b.price);
+    } else if (sortOption === 'price-high') {
+        sortedList.sort((a, b) => b.price - a.price);
+    } else if (sortOption === 'name-asc') {
+        sortedList.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    renderProducts(sortedList, gridId);
 }
 
 /* ---------------------------------------------------------
