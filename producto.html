@@ -195,7 +195,7 @@
         <div class="cart-footer">
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal">$0.00</span>
+                <span id="cartTotal">$0</span>
             </div>
             <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
                 <i class="fa-brands fa-whatsapp"></i> Comprar por WhatsApp
@@ -204,57 +204,6 @@
     </div>
 
     <script src="products.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = parseInt(urlParams.get('id'));
-            const container = document.getElementById('product-content');
-
-            const product = products.find(p => p.id === productId);
-
-            if (product) {
-                document.title = `${product.title} | Nikotechsolutions`;
-                const oldPriceHtml = product.oldPrice 
-                    ? `<span class="detail-old-price">$${product.oldPrice.toFixed(2)}</span>` 
-                    : '';
-
-                container.innerHTML = `
-                    <div class="detail-wrapper">
-                        <div class="detail-image-container">
-                            <img src="${product.image}" alt="${product.title}">
-                        </div>
-                        <div class="detail-info">
-                            ${product.badge ? `<span class="detail-badge">${product.badge}</span>` : ''}
-                            <h1 class="detail-title">${product.title}</h1>
-                            <div class="detail-rating">
-                                ${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}
-                            </div>
-                            <div class="detail-price-box">
-                                ${oldPriceHtml}
-                                <span>$${product.price.toFixed(2)}</span>
-                            </div>
-                            <p class="detail-description">${product.description || 'Sin descripción disponible.'}</p>
-                            <div class="detail-actions">
-                                <button class="btn-add-large" onclick="addToCart(${product.id})">
-                                    <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
-                                </button>
-                                <a href="catalogo.html" class="btn-back">
-                                    <i class="fa-solid fa-arrow-left"></i> Volver al Catálogo
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 80px 20px;">
-                        <h2>Producto no encontrado</h2>
-                        <p style="color: var(--text-muted); margin: 15px 0 25px 0;">El producto buscado no existe.</p>
-                        <a href="catalogo.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Volver al Catálogo</a>
-                    </div>
-                `;
-            }
-        });
-    </script>
+    
 </body>
 </html>

@@ -65,20 +65,20 @@
 
                 <!-- Columna izquierda: info de contacto -->
                 <div class="contact-info-col">
-                    <a href="https://wa.me/573000000000" target="_blank" class="info-card">
+                    <a href="https://wa.me/573001523568" target="_blank" class="info-card">
                         <i class="fa-brands fa-whatsapp"></i>
                         <div>
                             <h4>WhatsApp</h4>
-                            <p>+57 300 000 0000</p>
+                            <p>+57 300 152 3568</p>
                             <span>Atención inmediata</span>
                         </div>
                     </a>
 
-                    <a href="mailto:ventas@nikotechsolution.com" class="info-card">
+                    <a href="mailto:nico_20615@live.com" class="info-card">
                         <i class="fa-solid fa-envelope"></i>
                         <div>
                             <h4>Correo Electrónico</h4>
-                            <p>ventas@nikotechsolution.com</p>
+                            <p>nico_20615@live.com</p>
                             <span>Respuesta en menos de 24h</span>
                         </div>
                     </a>
@@ -105,7 +105,7 @@
                         <a href="#"><i class="fa-brands fa-instagram"></i></a>
                         <a href="#"><i class="fa-brands fa-facebook"></i></a>
                         <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                        <a href="https://wa.me/573000000000" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://wa.me/573001523568" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
 
@@ -153,7 +153,7 @@
         <div class="cart-footer">
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal" style="color: var(--accent-cyan);">$0.00</span>
+                <span id="cartTotal" style="color: var(--accent-cyan);">$0</span>
             </div>
             <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
                 <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
@@ -185,8 +185,8 @@
             </div>
             <div>
                 <h4 style="color: #fff; margin-bottom: 15px;">Contacto</h4>
-                <p><i class="fa-solid fa-envelope"></i> ventas@nikotechsolution.com</p>
-                <p><i class="fa-solid fa-phone"></i> +57 300 000 0000</p>
+                <p><i class="fa-solid fa-envelope"></i> nico_20615@live.com</p>
+                <p><i class="fa-solid fa-phone"></i> +57 300 152 3568</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -201,7 +201,7 @@
             const phone = document.getElementById('contactPhone').value;
             const msg = document.getElementById('contactMessage').value;
 
-            const phoneNumber = "573000000000"; // Número de WhatsApp de la tienda
+            const phoneNumber = "573001523568"; // Número de WhatsApp de la tienda
             const message = `¡Hola NikotechSolution! Soy ${name} (${phone}).\n\n${msg}`;
             window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
             return false;

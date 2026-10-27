@@ -56,29 +56,13 @@
 
     <main>
         <section class="page-header">
-            <h1 style="color: var(--accent-cyan);">🔥 Ofertas Relámpago</h1>
-            <p>Descuentos exclusivos por tiempo limitado en artículos seleccionados.</p>
+            <h1 style="color: var(--accent-cyan);">🔥 Ofertas</h1>
+            <p>Productos con precio rebajado. Sujetos a disponibilidad.</p>
         </section>
 
         <!-- Banner destacado -->
         <section class="container">
-            <div class="deal-banner">
-                <div class="deal-info">
-                    <span style="color: var(--accent-green); font-weight: 700; font-size: 14px;">OFERTA LIMITADA</span>
-                    <h3>Smartwatch Pro Cyber-X</h3>
-                    <p style="color: var(--text-muted);">Monitoreo de salud AI, pantalla AMOLED y resistencia al agua 50m.</p>
-                    <div class="countdown">
-                        <div class="time-box"><span id="hours">07</span><label>Horas</label></div>
-                        <div class="time-box"><span id="minutes">45</span><label>Min</label></div>
-                        <div class="time-box"><span id="seconds">12</span><label>Seg</label></div>
-                    </div>
-                </div>
-                <div>
-                    <button class="btn-primary" onclick="addToCart(4)">
-                        COMPRAR AHORA ($79.90)
-                    </button>
-                </div>
-            </div>
+            <div class="deal-banner" id="dealBanner"></div>
         </section>
 
         <section class="categories container">
@@ -100,7 +84,7 @@
         <div class="cart-footer">
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal" style="color: var(--accent-cyan);">$0.00</span>
+                <span id="cartTotal" style="color: var(--accent-cyan);">$0</span>
             </div>
             <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
                 <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
@@ -132,8 +116,8 @@
             </div>
             <div>
                 <h4 style="color: #fff; margin-bottom: 15px;">Contacto</h4>
-                <p><i class="fa-solid fa-envelope"></i> ventas@nikotechsolution.com</p>
-                <p><i class="fa-solid fa-phone"></i> +57 300 000 0000</p>
+                <p><i class="fa-solid fa-envelope"></i> nico_20615@live.com</p>
+                <p><i class="fa-solid fa-phone"></i> +57 300 152 3568</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -142,8 +126,6 @@
     </footer>
 
     <script>
-        // Carga inicial: solo productos que tienen descuento (oldPrice definido)
-        renderProducts(products.filter(p => p.oldPrice), 'ofertasGrid');
     </script>
 </body>
 </html>

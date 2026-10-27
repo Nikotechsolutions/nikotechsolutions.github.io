@@ -57,7 +57,7 @@
     <main>
         <section class="page-header">
             <h1>Catálogo Completo</h1>
-            <p>Explora todos nuestros componentes, periféricos y accesorios de alta tecnología.</p>
+            <p>Audio, smartwatch, cargadores, fundas y accesorios de las mejores marcas.</p>
         </section>
 
         <section class="categories container">
@@ -90,7 +90,7 @@
 
 </div>
             <!-- Grilla de Productos (se llena con products.js) -->
-            <div class="products-grid" id="productsGrid"></div>
+            <div class="products-grid" id="productsGrid" data-catalog="1"></div>
         </section>
     </main>
 
@@ -106,7 +106,7 @@
         <div class="cart-footer">
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cartTotal" style="color: var(--accent-cyan);">$0.00</span>
+                <span id="cartTotal" style="color: var(--accent-cyan);">$0</span>
             </div>
             <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
                 <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
@@ -138,8 +138,8 @@
             </div>
             <div>
                 <h4 style="color: #fff; margin-bottom: 15px;">Contacto</h4>
-                <p><i class="fa-solid fa-envelope"></i> ventas@nikotechsolution.com</p>
-                <p><i class="fa-solid fa-phone"></i> +57 300 000 0000</p>
+                <p><i class="fa-solid fa-envelope"></i> nico_20615@live.com</p>
+                <p><i class="fa-solid fa-phone"></i> +57 300 152 3568</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -148,8 +148,6 @@
     </footer>
 
     <script>
-        // Carga inicial: muestra todo el catálogo
-        renderProducts(products);
     </script>
 </body>
 </html>

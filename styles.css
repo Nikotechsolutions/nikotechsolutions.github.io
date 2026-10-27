@@ -1057,6 +1057,7 @@ a.info-card:hover {
   justify-content: center;
   gap: 10px;
 }
+}
 /* Corrección de enlaces de producto en tarjetas */
 .product-link {
   text-decoration: none !important;
@@ -1073,3 +1074,35 @@ a.info-card:hover {
 .product-link:hover .product-title {
   color: var(--accent-cyan) !important;
 }
+
+
+/* ===== NIKOTECH-TIENDA: ajustes catálogo real ===== */
+.product-img{width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;background:#fff;border-radius:12px}
+.brand-tag{font-size:11px;font-weight:700;color:var(--accent-cyan);text-transform:uppercase;letter-spacing:.8px;margin:8px 0 2px}
+.product-title{font-size:15px;line-height:1.35}
+.product-bottom{gap:8px;flex-wrap:wrap}
+.price-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:0}
+.old-price{text-decoration:line-through;color:var(--text-muted);font-size:13px}
+.from{font-size:11px;color:var(--text-muted)}
+.product-price.consult{font-size:14px;color:var(--accent-green)}
+a.add-cart-btn{text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.load-more-wrap{text-align:center;margin:30px 0 10px;grid-column:1/-1;width:100%}
+.btn-more{background:linear-gradient(90deg,var(--accent-cyan),#00a8ff);color:#000;font-weight:700;border:0;border-radius:30px;padding:13px 30px;cursor:pointer;font-size:15px}
+.results-note{color:var(--text-muted);font-size:13px}
+.sort-container select{background:var(--bg-card);color:#fff;border:1px solid var(--border-glow);border-radius:8px;padding:8px 12px}
+.cart-item-opt{font-size:12px;color:var(--accent-cyan)}
+.cart-sub{color:var(--text-muted);font-size:12px}
+.qty-ctrl{display:inline-flex;align-items:center;gap:10px;margin-top:6px}
+.qty-ctrl button{width:26px;height:26px;border-radius:50%;border:1px solid var(--border-glow);background:transparent;color:#fff;cursor:pointer}
+.cart-item img{background:#fff;object-fit:contain;border-radius:8px}
+.detail-image-container img{width:100%;max-height:none;aspect-ratio:1/1;object-fit:contain;background:#fff;border-radius:16px}
+.opt-box{margin:14px 0}.opt-box label{display:block;color:var(--text-muted);font-size:13px;margin-bottom:6px}
+.opt-box select{width:100%;max-width:340px;background:var(--bg-card);color:#fff;border:1px solid var(--border-glow);border-radius:10px;padding:12px}
+.detail-features{list-style:none;padding:0;margin:14px 0}
+.detail-features li{color:var(--text-muted);padding:4px 0;font-size:14px}
+.detail-features i{color:var(--accent-green);margin-right:6px}
+.detail-note{color:var(--text-muted);font-size:12px;margin-top:14px}
+.qty-big{display:inline-flex;align-items:center;border:1px solid var(--border-glow);border-radius:10px;overflow:hidden;margin-right:10px}
+.qty-big button{background:transparent;border:0;color:#fff;width:38px;height:44px;font-size:18px;cursor:pointer}
+.qty-big input{width:46px;text-align:center;background:transparent;border:0;color:#fff;font-size:16px}
+.detail-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
