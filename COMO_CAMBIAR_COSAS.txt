@@ -1,0 +1,37 @@
+COMO CAMBIAR COSAS EN TU TIENDA (sin ayuda)
+===========================================
+
+PRIMERA VEZ (solo una vez)
+  Sube los archivos de este zip a GitHub: Add file -> Upload files -> arrastra todos -> Commit changes.
+  (incluye panel.html y ajustes.js, que son los nuevos)
+
+DESPUES, PARA CAMBIAR PRODUCTOS DESTACADOS, PRECIOS, NOMBRES, IMAGENES U OCULTAR PRODUCTOS
+  1. Abre:  https://nikotechsolutions.github.io/panel.html
+  2. Busca el producto (por nombre, marca o numero) y haz clic en:
+       - "Destacar"   -> aparece en la portada (a la derecha puedes subirlo/bajarlo/quitarlo)
+       - "Editar"     -> cambia precio, precio anterior (tachado + % de descuento), nombre o imagen
+       - "Ocultar"    -> deja de verse en la tienda
+  3. A la derecha se genera un texto. Pulsa "Copiar texto".
+  4. Pulsa "Abrir ajustes.js en GitHub". Se abre el editor:
+       - Cmd+A (seleccionar todo), Cmd+V (pegar)
+       - Boton verde "Commit changes" (y otra vez "Commit changes")
+  5. Espera 2-5 minutos y mira la tienda en una ventana privada.
+
+PARA CAMBIAR UNA IMAGEN
+  1. En GitHub abre la carpeta img -> Add file -> Upload files -> sube tu foto (.jpg, .png o .webp).
+  2. En el panel: Editar el producto -> campo "Imagen" -> escribe el nombre del archivo (ej. mi-foto.jpg).
+  3. Copia el texto y pegalo en ajustes.js (pasos 3 y 4 de arriba).
+  (Truco rapido: si subes la foto con el mismo nombre que ya tenia, ej. 769.webp, se reemplaza sola.)
+
+DESCUENTOS (precio tachado)
+  - En "Antes" escribe el precio anterior REAL. El porcentaje se calcula solo.
+  - Un descuento debe ser verdadero: el precio anterior tiene que ser un precio al que realmente vendiste
+    o un precio de referencia verificable. Para quitar el tachado escribe 0 en "Antes".
+
+COSAS QUE DEBES SABER
+  - El panel NO guarda nada solo: siempre hay que pegar el texto en ajustes.js.
+  - ajustes.js es solo tuyo: cuando yo actualice la lista de productos, tus cambios se conservan.
+  - Los numeros (ID) de los productos son los que ves en el panel o en la direccion producto.html?id=NNN.
+    Si cargas una lista nueva del proveedor, avisame: puede que algunos numeros cambien.
+  - Si algo sale mal, borra el contenido de ajustes.js y pega el texto original (o pidemelo): la tienda sigue funcionando.
+  - Los costos de tus proveedores NUNCA se suben a GitHub (estan solo en tu Excel privado).
