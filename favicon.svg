@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs><filter id="g" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect width="64" height="64" rx="14" fill="#050b14"/>
+  <polygon points="37,3 11,36 29,36 24,61 53,26 35,26" fill="#00f2fe" filter="url(#g)"/>
+</svg>
