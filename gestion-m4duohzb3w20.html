@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Panel de ajustes | Nikotechsolutions</title>
+    <link rel="stylesheet" href="styles.css?v=20261102">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
+    <script src="products.js?v=20261102"></script>
+    <script>document.write('<script src="ajustes.js?t='+Math.floor(Date.now()/60000)+'"><\/script>');</script>
+    <style>
+        .pn{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:26px;align-items:start;padding-top:24px;padding-bottom:50px}
+        .pn h1{font-family:"Poppins",sans-serif;font-size:2rem;margin-bottom:6px}
+        .pn-help{color:var(--text-muted);line-height:1.6;margin-bottom:18px}
+        .pn-steps{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+        .pn-steps span{padding:8px 14px;border-radius:999px;background:rgba(0,242,254,.08);border:1px solid rgba(0,242,254,.25);font-size:13px}
+        .pn-steps b{color:var(--accent-cyan)}
+        .pn-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+        .pn-bar input[type=search],.pn-bar select{padding:11px 14px;border-radius:12px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px}
+        .pn-bar input[type=search]{flex:1;min-width:200px}
+        .pn-bar label{display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:13px}
+        .pr{display:flex;gap:14px;padding:14px;border-radius:16px;background:linear-gradient(180deg,#0e1b38,#0a1630);border:1px solid var(--border-glow);margin-bottom:12px}
+        .pr.is-hidden{opacity:.55}.pr.is-dest{border-color:var(--accent-cyan);box-shadow:0 0 0 1px rgba(0,242,254,.35)}
+        .pr-img{width:84px;height:84px;flex:0 0 84px;object-fit:contain;background:#fff;border-radius:12px}
+        .pr .ph{width:84px;height:84px;flex:0 0 84px;margin:0;gap:0;border-radius:12px}.pr .ph i{font-size:26px}.pr .ph span{display:none}
+        .pr-main{flex:1;min-width:0}
+        .pr-top{font-size:12px;color:var(--text-muted)}.pr-top b{color:var(--accent-cyan)}
+        .pr-title{font-weight:600;margin:2px 0 4px;overflow-wrap:anywhere}
+        .pr-price{font-family:"Poppins",sans-serif;font-weight:700;color:var(--accent-cyan)}.pr-price s{color:#ff9aa6;font-size:12px;font-weight:400;margin-left:6px}
+        .pr-badge{margin-left:8px;padding:2px 8px;border-radius:8px;font-size:12px;background:linear-gradient(135deg,#ff2d55,#ff7a00);color:#fff}
+        .pr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+        .pr-actions button,.pn-btn{padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:#fff;font-size:13px;cursor:pointer;transition:all .2s}
+        .pr-actions button:hover,.pn-btn:hover{border-color:var(--accent-cyan);color:var(--accent-cyan)}
+        .pr-actions button.on{background:var(--accent-cyan);color:#001018;border-color:var(--accent-cyan);font-weight:700}
+        .pr-edit{margin-top:12px;padding:12px;border-radius:12px;background:rgba(0,0,0,.25);display:grid;gap:10px}
+        .pr-edit[hidden]{display:none}
+        .pr-edit label{display:grid;gap:4px;font-size:12px;color:var(--text-muted)}
+        .pr-edit input{padding:9px 10px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%;min-width:0}
+        .pr-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .pr-opt{padding:10px;border-radius:10px;border:1px dashed rgba(255,255,255,.15)}.pr-opt>b{display:block;font-size:12.5px;margin-bottom:6px;color:#e6fbff;font-weight:600}
+        .pr-hint{font-size:11.5px;color:var(--text-muted)}
+        .pn-side{position:sticky;top:92px;display:grid;gap:16px;max-height:calc(100vh - 110px);overflow:auto}
+        .pn-card{padding:16px;border-radius:18px;background:linear-gradient(180deg,#0d1a36,#0a1630);border:1px solid var(--border-glow)}
+        .pn-card h3{font-size:15px;margin-bottom:10px;font-family:"Poppins",sans-serif}
+        .dl{display:grid;gap:6px}.dl-i{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.04);font-size:13px}
+        .dl-i span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dl-i{min-width:0}.pn-side>*{min-width:0}.pn-side{overflow-x:hidden}.pn>div{min-width:0}.dl-i b{color:var(--accent-cyan);width:20px}
+        .dl-i button{border:0;background:none;color:#fff;cursor:pointer;padding:4px 6px;border-radius:6px}.dl-i button:hover{background:rgba(0,242,254,.2)}
+        .pn-warn{color:#ffb347;font-size:12.5px;margin-top:8px}
+        #out{width:100%;height:230px;padding:10px;border-radius:12px;border:1px solid var(--border-glow);background:#050b14;color:#9ef0ff;font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical}
+        .pn-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.pn-btn.primary{background:linear-gradient(90deg,var(--accent-cyan),#00a8ff);color:#001018;border:0;font-weight:700}
+        .pn-pw{display:grid;gap:8px;margin-bottom:8px}.pn-pw input{padding:10px 12px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%}
+        .bn-l{display:grid;gap:6px;font-size:13px;color:var(--text-muted)}.bn-l select,.bn-grid input{padding:9px 10px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%}
+        .bn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bn-grid label{display:grid;gap:3px;font-size:12px;color:var(--text-muted)}
+        .pn-ok{color:var(--accent-green);font-size:13px;margin-top:6px;min-height:18px}
+        .pn-steps2{color:var(--text-muted);font-size:13px;line-height:1.7;padding-left:18px}.pn-steps2 b{color:#fff}
+        @media(max-width:1000px){.pn{grid-template-columns:1fr}.pn-side{position:static;max-height:none}.pr-row2{grid-template-columns:1fr}}
+        @media(max-width:520px){.pr{flex-direction:column}.pr-img,.pr .ph{width:100%;height:160px;flex-basis:auto}}
+    </style>
+    <style>
+        .gate{position:fixed;inset:0;z-index:9999;background:radial-gradient(900px 500px at 70% 10%,rgba(0,242,254,.12),transparent 60%),#050b14;display:flex;align-items:center;justify-content:center;padding:20px}
+        .gate-box{width:min(92vw,400px);padding:28px;border-radius:22px;background:linear-gradient(180deg,#0e1b38,#0a1630);border:1px solid var(--border-glow);text-align:center}
+        .gate-box h2{font-family:"Poppins",sans-serif;margin:8px 0 6px}.gate-box p{color:var(--text-muted);font-size:14px;margin-bottom:14px}
+        .gate-box input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:15px;margin-bottom:10px}
+        .gate-box button{width:100%;padding:13px;border-radius:999px;border:0;background:linear-gradient(90deg,var(--accent-cyan),#00a8ff);color:#001018;font-weight:700;cursor:pointer;font-size:15px}
+        .gate-err{color:#ff9aa6;font-size:13px;min-height:18px;margin-top:8px}
+        body.locked>header,body.locked>main,body.locked>.topbar,body.locked>footer{display:none!important}
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var clave = (typeof AJ_PANEL_CLAVE !== 'undefined' && AJ_PANEL_CLAVE) ? AJ_PANEL_CLAVE : '';
+        if (!clave || sessionStorage.getItem('pn_ok') === '1') return;
+        document.body.classList.add('locked');
+        var g = document.createElement('div'); g.className = 'gate';
+        g.innerHTML = '<div class="gate-box"><div style="font-size:34px;color:var(--accent-cyan)"><i class="fa-solid fa-lock"></i></div><h2>Panel privado</h2><p>Escribe la contraseña para continuar.</p><input type="password" id="gpw" placeholder="Contraseña" autocomplete="current-password" autofocus><button id="gbtn">Entrar</button><div class="gate-err" id="gerr"></div></div>';
+        document.body.appendChild(g);
+        var fails = 0, busy = false;
+        async function check() {
+            if (busy) return; busy = true; var err = document.getElementById('gerr'); err.textContent = '';
+            try {
+                var p = clave.split('$'), salt = Uint8Array.from(atob(p[2]), function (c) { return c.charCodeAt(0); });
+                var key = await crypto.subtle.importKey('raw', new TextEncoder().encode(document.getElementById('gpw').value), 'PBKDF2', false, ['deriveBits']);
+                var h = btoa(String.fromCharCode.apply(null, new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: salt, iterations: parseInt(p[1], 10) }, key, 256))));
+                if (h === p[3]) { sessionStorage.setItem('pn_ok', '1'); document.body.classList.remove('locked'); g.remove(); return; }
+            } catch (e) { err.textContent = 'No se pudo comprobar la contraseña en este navegador.'; busy = false; return; }
+            fails++; err.textContent = 'Contraseña incorrecta.'; document.getElementById('gpw').value = '';
+            await new Promise(function (r) { setTimeout(r, Math.min(8000, 1200 * fails)); }); busy = false;
+        }
+        document.getElementById('gbtn').onclick = check;
+        document.getElementById('gpw').addEventListener('keydown', function (e) { if (e.key === 'Enter') check(); });
+    });
+    </script>
+</head>
+<body>
+<header>
+    <div class="container nav-container">
+        <a href="index.html" class="brand-logo"><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i><span style="color:#fff">Nikotech<span style="color:var(--accent-cyan)">solutions</span></span></a>
+        <div style="margin-left:auto"><a class="pn-btn" href="index.html" style="text-decoration:none"><i class="fa-solid fa-arrow-left"></i> Volver a la tienda</a></div>
+    </div>
+</header>
+<main class="container pn">
+  <div>
+    <h1>Panel de ajustes</h1>
+    <p class="pn-help">Aquí eliges qué productos destacar, cambias precios, nombres o imágenes y ocultas lo que no quieras mostrar. <b>Nada se guarda solo:</b> al final te genera un texto (columna derecha) que pegas en <code>ajustes.js</code> en GitHub.</p>
+    <div class="pn-steps"><span><b>1</b> Busca el producto</span><span><b>2</b> Haz clic en ★ / Editar / Ocultar</span><span><b>3</b> Copia el texto de la derecha</span><span><b>4</b> Pégalo en <code>ajustes.js</code> en GitHub</span></div>
+    <div class="pn-bar">
+        <input type="search" id="q" placeholder="Buscar por nombre, marca o número (ID)…">
+        <select id="cat"><option value="">Todas las categorías</option></select>
+        <label><input type="checkbox" id="fDest"> Solo destacados</label>
+        <label><input type="checkbox" id="fMod"> Solo con cambios</label>
+    </div>
+    <div id="plist"></div>
+    <div style="text-align:center"><button class="pn-btn" id="more">Ver más productos</button></div>
+  </div>
+  <aside class="pn-side">
+    <div class="pn-card"><h3><i class="fa-solid fa-star" style="color:var(--accent-cyan)"></i> Destacados de la portada (<span id="nd">0</span>)</h3><div class="dl" id="dlist"></div><div class="pn-warn" id="dwarn"></div></div>
+    <div class="pn-card"><h3>Resumen de cambios</h3><div id="sum" class="pr-hint"></div></div>
+    <!--PWCARD--><div class="pn-card">
+        <h3><i class="fa-solid fa-lock" style="color:var(--accent-cyan)"></i> Contraseña de este panel</h3>
+        <p class="pr-hint" id="pwstate"></p>
+        <div class="pn-pw"><input type="password" id="pw1" placeholder="Nueva contraseña (mín. 10 caracteres)" autocomplete="new-password"><input type="password" id="pw2" placeholder="Repite la contraseña" autocomplete="new-password"></div>
+        <div class="pn-btns"><button class="pn-btn primary" id="pwset">Crear / cambiar contraseña</button><button class="pn-btn" id="pwoff">Quitar contraseña</button></div>
+        <div class="pn-ok" id="pwok"></div>
+        <p class="pr-hint">Usa una frase larga (ej. 4 palabras sin relación). La contraseña no se envía a ningún lado: solo se guarda su huella en <code>ajustes.js</code>. <b>Si la olvidas</b>, edita <code>ajustes.js</code> en GitHub y borra el texto entre comillas de <code>AJ_PANEL_CLAVE</code>.</p>
+    </div><!--/PWCARD-->
+    <div class="pn-card">
+        <h3><i class="fa-solid fa-images" style="color:var(--accent-cyan)"></i> Banner de la portada</h3>
+        <label class="bn-l">Estilo del banner<select id="bnStyle"><option value="escenario">Escenario (nuevo)</option><option value="clasico">Clásico (anterior)</option></select></label>
+        <p class="pr-hint" style="margin:10px 0 6px">Producto de cada diapositiva (opcional). Escribe el número (ID) o déjalo vacío para que sea automático.</p>
+        <div class="bn-grid" id="bnGrid"></div>
+        <div class="pr-hint" id="bnNames"></div>
+    </div>
+    <div class="pn-card">
+        <h3>Texto para <code>ajustes.js</code></h3>
+        <textarea id="out" readonly spellcheck="false"></textarea>
+        <div class="pn-btns"><button class="pn-btn primary" id="copy"><i class="fa-regular fa-copy"></i> Copiar texto</button>
+        <a class="pn-btn" style="text-decoration:none" target="_blank" rel="noopener" href="https://github.com/Nikotechsolutions/nikotechsolutions.github.io/edit/main/ajustes.js"><i class="fa-brands fa-github"></i> Abrir ajustes.js en GitHub</a></div>
+        <div class="pn-ok" id="ok"></div>
+        <ol class="pn-steps2"><li>Pulsa <b>Copiar texto</b>.</li><li>Pulsa <b>Abrir ajustes.js en GitHub</b> (te pide entrar a tu cuenta).</li><li>Selecciona todo (<b>Cmd+A</b>), pega (<b>Cmd+V</b>) y pulsa <b>Commit changes</b> dos veces.</li><li>Espera 2 minutos y mira la tienda en ventana privada.</li></ol>
+    </div>
+  </aside>
+</main>
+<script>
+(function(){
+const has = n => { try { return typeof eval(n) !== 'undefined'; } catch (e) { return false; } };
+const S = {
+    dest: has('AJ_DESTACADOS') ? AJ_DESTACADOS.slice() : [],
+    precios: has('AJ_PRECIOS') ? JSON.parse(JSON.stringify(AJ_PRECIOS)) : {},
+    ocultos: new Set(has('AJ_OCULTOS') ? AJ_OCULTOS : []),
+    nombres: has('AJ_NOMBRES') ? Object.assign({}, AJ_NOMBRES) : {},
+    imagenes: has('AJ_IMAGENES') ? Object.assign({}, AJ_IMAGENES) : {},
+    clave: has('AJ_PANEL_CLAVE') ? AJ_PANEL_CLAVE : '',
+    banner: has('AJ_BANNER') && AJ_BANNER ? AJ_BANNER : 'escenario',
+    bprod: has('AJ_BANNER_PRODUCTOS') && AJ_BANNER_PRODUCTOS ? Object.assign({}, AJ_BANNER_PRODUCTOS) : {}
+};
+const $ = id => document.getElementById(id);
+let shownN = 30, openId = null;
+const num = v => { const n = parseInt(String(v).replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; };
+const catSel = $('cat'); CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; catSel.appendChild(o); });
+const modified = id => !!(S.precios[id] || S.nombres[id] || S.imagenes[id] || S.ocultos.has(id));
+function effPrice(p){
+    const c = S.precios[p.id] || {};
+    if (hasOpts(p)) return { price: p.price, old: p.oldPrice };
+    return { price: c.precio || p.price, old: ('antes' in c) ? (c.antes || null) : p.oldPrice };
+}
+function rowHTML(p){
+    const e = effPrice(p), isD = S.dest.includes(p.id), idx = S.dest.indexOf(p.id) + 1, hid = S.ocultos.has(p.id);
+    const pct = e.old && e.price && e.old > e.price ? Math.round((1 - e.price / e.old) * 100) : 0;
+    return `<div class="pr${isD ? ' is-dest' : ''}${hid ? ' is-hidden' : ''}" data-id="${p.id}">
+      <img class="pr-img" src="${esc(S.imagenes[p.id] ? (/^(https?:|img\/)/.test(S.imagenes[p.id]) ? S.imagenes[p.id] : 'img/' + S.imagenes[p.id]) : p.image)}" alt=""${imgAttr(p)}>
+      <div class="pr-main">
+        <div class="pr-top"><b>#${p.id}</b> · ${esc(p.brand || '—')} · ${esc((CATEGORIES.find(c => c.id === p.category) || {}).name || '')}${hid ? ' · <b style="color:#ffb347">OCULTO</b>' : ''}</div>
+        <div class="pr-title">${esc(S.nombres[p.id] || p.title)}</div>
+        <div class="pr-price">${p.price ? (hasOpts(p) ? 'Desde ' : '') + fmt(e.price) : 'Consultar'}${e.old ? `<s>${fmt(e.old)}</s>` : ''}${pct ? `<span class="pr-badge">-${pct}%</span>` : ''}</div>
+        <div class="pr-actions">
+          <button data-a="dest" class="${isD ? 'on' : ''}">${isD ? '★ Destacado (#' + idx + ')' : '☆ Destacar'}</button>
+          <button data-a="edit">✎ Editar precio / nombre / imagen</button>
+          <button data-a="hide" class="${hid ? 'on' : ''}">${hid ? 'Mostrar de nuevo' : 'Ocultar'}</button>
+        </div>
+        <div class="pr-edit" ${openId === p.id ? '' : 'hidden'}>${editHTML(p)}</div>
+      </div></div>`;
+}
+function editHTML(p){
+    const c = S.precios[p.id] || {};
+    let h = `<label>Nombre en la tienda<input data-f="nombre" value="${esc(S.nombres[p.id] || p.title)}"></label>
+             <label>Imagen (nombre del archivo que subiste a la carpeta img, ej. mi-foto.jpg)<input data-f="imagen" placeholder="${p.id}.webp" value="${esc(S.imagenes[p.id] || '')}"></label>`;
+    if (hasOpts(p)) {
+        h += '<div class="pr-hint">Este producto tiene opciones. Cambia el precio de cada una:</div>' + p.options.map(o => {
+            const oc = ((c.opciones || {})[o.label]); const x = (oc && typeof oc === 'object') ? oc : (oc ? { precio: oc } : {});
+            return `<div class="pr-opt"><b>${esc(o.label)}</b><div class="pr-row2"><label>Precio<input data-f="o-precio" data-o="${esc(o.label)}" inputmode="numeric" value="${x.precio || o.price || ''}"></label><label>Antes (tachado)<input data-f="o-antes" data-o="${esc(o.label)}" inputmode="numeric" placeholder="${o.old || 'vacío = sin cambio'}" value="${'antes' in x ? x.antes : ''}"></label></div></div>`;
+        }).join('');
+    } else {
+        h += `<div class="pr-row2"><label>Precio<input data-f="precio" inputmode="numeric" value="${c.precio || p.price || ''}"></label><label>Antes (precio tachado)<input data-f="antes" inputmode="numeric" placeholder="${p.oldPrice || 'vacío = sin cambio'}" value="${'antes' in c ? c.antes : ''}"></label></div>`;
+    }
+    return h + '<div class="pr-hint">Escribe solo números (sin puntos). En "Antes": vacío = no cambia · 0 = quitar el precio tachado.</div>';
+}
+function list(){
+    const q = $('q').value.trim().toLowerCase(), cat = $('cat').value;
+    return ALL_PRODUCTS.filter(p => (!cat || p.category === cat) && (!$('fDest').checked || S.dest.includes(p.id)) && (!$('fMod').checked || modified(p.id)) &&
+        (!q || String(p.id) === q || (p.title + ' ' + (p.brand || '')).toLowerCase().includes(q)));
+}
+function render(){
+    const l = list(); $('plist').innerHTML = l.slice(0, shownN).map(rowHTML).join('') || '<p class="pr-hint">No hay productos con ese filtro.</p>';
+    $('more').style.display = l.length > shownN ? '' : 'none'; $('more').textContent = `Ver más productos (${l.length - shownN} restantes)`;
+    side(); out();
+}
+function side(){
+    $('nd').textContent = S.dest.length;
+    $('dlist').innerHTML = S.dest.map((id, i) => { const p = getP(id) || ALL_PRODUCTS.find(x => x.id === id); return `<div class="dl-i" data-id="${id}"><b>${i + 1}</b><span title="${esc(p ? p.title : id)}">${esc(S.nombres[id] || (p ? p.title : 'ID ' + id))}</span><button data-a="up" title="Subir">▲</button><button data-a="down" title="Bajar">▼</button><button data-a="rm" title="Quitar">✕</button></div>`; }).join('') || '<span class="pr-hint">Aún no hay destacados.</span>';
+    $('dwarn').textContent = S.dest.length < 4 ? 'Pon al menos 4 productos destacados.' : S.dest.length > 12 ? 'Se mostrarán solo 12 en la portada.' : '';
+    const np = Object.keys(S.precios).length;
+    $('sum').innerHTML = `Precios modificados: <b>${np}</b> · Ocultos: <b>${S.ocultos.size}</b> · Nombres: <b>${Object.keys(S.nombres).length}</b> · Imágenes: <b>${Object.keys(S.imagenes).length}</b>`;
+}
+const J = JSON.stringify;
+function out(){
+    const L = [];
+    L.push('/* AJUSTES DE TU TIENDA — generado con panel.html. Puedes seguir usando el panel para cambiarlo. */', '');
+    L.push('/* 1) PRODUCTOS DESTACADOS de la portada, en orden (ID separados por coma). Entre 4 y 12. */', `const AJ_DESTACADOS = [${S.dest.join(', ')}];`, '');
+    L.push('/* 2) CAMBIOS DE PRECIO (precio, antes = precio tachado, antes: 0 quita el tachado). */', 'const AJ_PRECIOS = {');
+    Object.keys(S.precios).forEach(id => {
+        const c = S.precios[id], parts = [];
+        if (c.precio) parts.push(`precio: ${c.precio}`); if ('antes' in c && c.antes !== undefined) parts.push(`antes: ${c.antes}`);
+        if (c.opciones && Object.keys(c.opciones).length) parts.push('opciones: { ' + Object.entries(c.opciones).map(([k, v]) => { const x = (v && typeof v === 'object') ? v : { precio: v }; const q = []; if (x.precio) q.push('precio: ' + x.precio); if ('antes' in x && x.antes !== undefined) q.push('antes: ' + x.antes); return J(k) + ': { ' + q.join(', ') + ' }'; }).join(', ') + ' }');
+        if (parts.length) L.push(`  ${id}: { ${parts.join(', ')} },`);
+    });
+    L.push('};', '', '/* 3) PRODUCTOS OCULTOS (ID separados por coma). */', `const AJ_OCULTOS = [${[...S.ocultos].join(', ')}];`, '');
+    L.push('/* 4) NOMBRES CAMBIADOS. */', 'const AJ_NOMBRES = {', ...Object.entries(S.nombres).map(([k, v]) => `  ${k}: ${J(v)},`), '};', '');
+    L.push('/* 5) IMÁGENES CAMBIADAS (archivo dentro de la carpeta img). */', 'const AJ_IMAGENES = {', ...Object.entries(S.imagenes).map(([k, v]) => `  ${k}: ${J(v)},`), '};', '');
+    L.push('/* 6) CONTRASEÑA DEL PANEL EN LÍNEA. No la escribas aquí: se crea desde el panel (aquí solo se guarda su huella). */', `const AJ_PANEL_CLAVE = ${J(S.clave || '')};`, '');
+    L.push('/* 7) ESTILO DEL BANNER de la portada: "escenario" (nuevo) o "clasico" (anterior). */', `const AJ_BANNER = ${J(S.banner || 'escenario')};`, '');
+    L.push('/* 8) PRODUCTO DE CADA DIAPOSITIVA del banner (opcional): categoría: ID. */', 'const AJ_BANNER_PRODUCTOS = {', ...Object.entries(S.bprod).filter(([k, v]) => v).map(([k, v]) => `  ${k}: ${v},`), '};', '');
+    $('out').value = L.join('\n');
+}
+// eventos
+$('plist').addEventListener('click', e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return; const id = +b.closest('.pr').dataset.id, a = b.dataset.a;
+    if (a === 'dest') { const i = S.dest.indexOf(id); if (i >= 0) S.dest.splice(i, 1); else S.dest.push(id); }
+    else if (a === 'hide') { S.ocultos.has(id) ? S.ocultos.delete(id) : S.ocultos.add(id); }
+    else if (a === 'edit') { openId = openId === id ? null : id; }
+    render();
+});
+$('plist').addEventListener('change', e => {
+    const t = e.target, f = t.dataset.f; if (!f) return; const id = +t.closest('.pr').dataset.id, p = ALL_PRODUCTS.find(x => x.id === id), v = t.value.trim();
+    const c = S.precios[id] = S.precios[id] || {};
+    if (f === 'nombre') { if (v && v !== p.title) S.nombres[id] = v; else delete S.nombres[id]; }
+    else if (f === 'imagen') { if (v) S.imagenes[id] = v; else delete S.imagenes[id]; }
+    else if (f === 'precio') { const n = num(v); if (n) c.precio = n; else delete c.precio; }
+    else if (f === 'antes') { if (v === '') delete c.antes; else c.antes = num(v) || 0; }
+    else if (f === 'o-precio' || f === 'o-antes') {
+        c.opciones = c.opciones || {}; const lab = t.dataset.o; const x = (c.opciones[lab] && typeof c.opciones[lab] === 'object') ? c.opciones[lab] : (c.opciones[lab] ? { precio: c.opciones[lab] } : {});
+        if (f === 'o-precio') { const n = num(v); if (n) x.precio = n; else delete x.precio; } else { if (v === '') delete x.antes; else x.antes = num(v) || 0; }
+        if (Object.keys(x).length) c.opciones[lab] = x; else delete c.opciones[lab];
+    }
+    if (!Object.keys(c).length || (Object.keys(c).length === 1 && c.opciones && !Object.keys(c.opciones).length)) delete S.precios[id];
+    const keep = openId; render(); openId = keep;
+});
+$('dlist').addEventListener('click', e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return; const id = +b.closest('.dl-i').dataset.id, i = S.dest.indexOf(id), a = b.dataset.a;
+    if (a === 'rm') S.dest.splice(i, 1); else if (a === 'up' && i > 0) [S.dest[i - 1], S.dest[i]] = [S.dest[i], S.dest[i - 1]]; else if (a === 'down' && i < S.dest.length - 1) [S.dest[i + 1], S.dest[i]] = [S.dest[i], S.dest[i + 1]];
+    render();
+});
+['q', 'cat', 'fDest', 'fMod'].forEach(id => $(id).addEventListener(id === 'q' ? 'input' : 'change', () => { shownN = 30; render(); }));
+$('more').onclick = () => { shownN += 30; render(); };
+$('copy').onclick = async () => {
+    const t = $('out'); t.select();
+    try { await navigator.clipboard.writeText(t.value); } catch (e) { document.execCommand('copy'); }
+    $('ok').textContent = '✓ Copiado. Ahora pégalo en ajustes.js (botón de GitHub).'; setTimeout(() => $('ok').textContent = '', 6000);
+};
+async function pbkdf2(pw, salt){
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+    return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 200000 }, key, 256));
+}
+const b64 = u8 => btoa(String.fromCharCode(...u8));
+function pwStateTxt(){ const el = $('pwstate'); if (el) el.innerHTML = S.clave ? '🔒 Este panel <b>tiene contraseña</b> (cuando publiques el texto en ajustes.js).' : '🔓 Este panel <b>no tiene contraseña</b>: cualquiera con el enlace puede abrirlo (no puede cambiar nada, solo generar texto).'; }
+if ($('pwset')) {
+    $('pwset').onclick = async () => {
+        const a = $('pw1').value, c = $('pw2').value, ok = $('pwok');
+        if (a.length < 10) { ok.style.color = '#ffb347'; ok.textContent = 'Usa al menos 10 caracteres.'; return; }
+        if (a !== c) { ok.style.color = '#ffb347'; ok.textContent = 'Las dos contraseñas no coinciden.'; return; }
+        ok.style.color = 'var(--accent-green)'; ok.textContent = 'Calculando…';
+        const salt = crypto.getRandomValues(new Uint8Array(16)); const h = await pbkdf2(a, salt);
+        S.clave = 'pbkdf2$200000$' + b64(salt) + '$' + b64(h); $('pw1').value = $('pw2').value = '';
+        ok.textContent = '✓ Lista. Copia el texto de abajo y pégalo en ajustes.js para activarla.'; out(); pwStateTxt();
+    };
+    $('pwoff').onclick = () => { S.clave = ''; $('pwok').style.color = 'var(--accent-green)'; $('pwok').textContent = 'Contraseña quitada. Copia el texto y pégalo en ajustes.js.'; out(); pwStateTxt(); };
+    pwStateTxt();
+}
+const BN_CATS = [['celulares', 'Celulares'], ['audio', 'Audio'], ['smartwatch', 'Smartwatch'], ['portatiles', 'Portátiles'], ['televisores', 'Televisores']];
+if ($('bnStyle')) {
+    $('bnGrid').innerHTML = BN_CATS.map(c => '<label>' + c[1] + '<input inputmode="numeric" data-bp="' + c[0] + '" placeholder="auto" value="' + (S.bprod[c[0]] || '') + '"></label>').join('');
+    $('bnStyle').value = S.banner;
+    const names = () => { $('bnNames').innerHTML = BN_CATS.filter(c => S.bprod[c[0]]).map(c => { const p = ALL_PRODUCTS.find(x => x.id === +S.bprod[c[0]]); return '<div>' + c[1] + ' → ' + (p ? esc(p.title) : '<b style="color:#ffb347">ID no encontrado</b>') + '</div>'; }).join(''); };
+    $('bnStyle').onchange = () => { S.banner = $('bnStyle').value; out(); };
+    $('bnGrid').addEventListener('change', e => { const k = e.target.dataset.bp; if (!k) return; const n = num(e.target.value); if (n) S.bprod[k] = n; else delete S.bprod[k]; names(); out(); });
+    names();
+}
+document.addEventListener('DOMContentLoaded', render);
+if (document.readyState !== 'loading') render();
+})();
+</script>
+</body>
+</html>
