@@ -1421,3 +1421,18 @@ img{max-width:100%}
 .hero2-chip{max-width:330px}.hero2-chip span{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
 .detail-price-box{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}.detail-price-box .disc-pill{margin-left:0}
 .footer2 .brand-logo{font-size:26px}.footer2 .brand-logo i{font-size:24px}
+/* Ocultar el badge flotante de Netlify */
+iframe[src*="about:srcdoc"],
+iframe#nl-badge-frame,
+iframe[title*="Netlify"],
+#nl-badge,
+.nl-badge,
+.nl-wrap,
+#nl-card {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
