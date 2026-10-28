@@ -1106,3 +1106,76 @@ a.add-cart-btn{text-decoration:none;display:inline-flex;align-items:center;gap:6
 .qty-big button{background:transparent;border:0;color:#fff;width:38px;height:44px;font-size:18px;cursor:pointer}
 .qty-big input{width:46px;text-align:center;background:transparent;border:0;color:#fff;font-size:16px}
 .detail-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+
+/* ===== NIKOTECH-ANIMACIONES ===== */
+html{scroll-behavior:smooth}
+/* Banner principal */
+@keyframes slideFade{from{opacity:0}to{opacity:1}}
+@keyframes textUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes imgIn{from{opacity:0;transform:scale(.92) translateX(40px)}to{opacity:1;transform:none}}
+@keyframes dotFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.slide.active{animation:slideFade .7s ease both}
+.slide.active .hero-text h1{animation:textUp .8s .1s cubic-bezier(.2,.7,.2,1) both}
+.slide.active .hero-text p{animation:textUp .8s .3s cubic-bezier(.2,.7,.2,1) both}
+.slide.active .hero-image{animation:imgIn .9s .15s cubic-bezier(.2,.7,.2,1) both}
+.dot.active{position:relative;overflow:hidden;background:rgba(255,255,255,.18)}
+.dot.active::after{content:'';position:absolute;inset:0;background:var(--accent-cyan);transform-origin:left;animation:dotFill 5s linear forwards}
+/* Header y menú */
+header{transition:padding .3s ease,background .3s ease,box-shadow .3s ease}
+header.scrolled{padding:8px 0;background:rgba(5,11,20,.95);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.brand-logo i{display:inline-block;animation:boltGlow 3s ease-in-out infinite}
+@keyframes boltGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(0,242,254,.4));transform:scale(1)}50%{filter:drop-shadow(0 0 10px rgba(0,242,254,.95));transform:scale(1.12)}}
+.nav-links a{position:relative}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-6px;height:2px;width:0;background:var(--accent-cyan);box-shadow:0 0 8px var(--accent-cyan);transition:width .3s ease}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.mobile-menu-btn i{transition:transform .35s ease}
+.mobile-menu-btn i.fa-xmark{transform:rotate(180deg)}
+@keyframes linkIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.nav-links.active li{animation:linkIn .4s both}
+.nav-links.active li:nth-child(1){animation-delay:.05s}.nav-links.active li:nth-child(2){animation-delay:.12s}
+.nav-links.active li:nth-child(3){animation-delay:.19s}.nav-links.active li:nth-child(4){animation-delay:.26s}
+/* Carrito */
+@keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.25) rotate(-8deg)}60%{transform:scale(.95) rotate(6deg)}100%{transform:scale(1)}}
+.cart-btn.bump{animation:bump .6s ease}
+.cart-item{animation:linkIn .35s both}
+/* Tarjetas: aparecen al hacer scroll */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease,background .3s ease,border-color .3s ease,box-shadow .3s ease}
+.reveal.in{opacity:1;transform:none}
+.product-card.reveal.in:hover{transform:translateY(-6px)}
+.product-link{overflow:hidden;border-radius:10px}
+.product-img{transition:transform .5s ease}
+.product-card:hover .product-img{transform:scale(1.06)}
+.add-cart-btn{transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.add-cart-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,242,254,.35)}
+.add-cart-btn:active{transform:scale(.95)}
+.filter-btn{transition:all .25s ease}
+.filter-btn:hover{transform:translateY(-2px)}
+/* Botones flotantes */
+.wa-float{position:fixed;right:20px;bottom:20px;width:58px;height:58px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;text-decoration:none;z-index:90;box-shadow:0 6px 20px rgba(0,0,0,.45);animation:waPulse 2.6s infinite}
+.wa-float:hover{transform:scale(1.1)}
+@keyframes waPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.6),0 6px 20px rgba(0,0,0,.45)}70%{box-shadow:0 0 0 18px rgba(37,211,102,0),0 6px 20px rgba(0,0,0,.45)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0),0 6px 20px rgba(0,0,0,.45)}}
+.to-top{position:fixed;right:28px;bottom:92px;width:42px;height:42px;border-radius:50%;border:1px solid var(--border-glow);background:rgba(12,22,44,.9);color:var(--accent-cyan);cursor:pointer;z-index:90;opacity:0;transform:translateY(12px);pointer-events:none;transition:all .3s ease}
+.to-top.show{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
+
+
+/* ===== NIKOTECH-TIENDA-2: placeholders, categorías, variantes ===== */
+.ph{width:100%;aspect-ratio:1/1;border-radius:12px;margin-bottom:10px;background:radial-gradient(circle at 30% 20%,#17386a,#0a1630 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--accent-cyan);border:1px dashed rgba(0,242,254,.25)}
+.ph i{font-size:48px;opacity:.9;filter:drop-shadow(0 0 10px rgba(0,242,254,.5))}
+.ph span{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);text-align:center;padding:0 8px}
+.detail-image-container .ph{margin:0;min-height:320px;aspect-ratio:1/1}
+.cart-item .ph{width:62px;height:62px;min-width:62px;margin:0;gap:0;border-radius:8px}.cart-item .ph i{font-size:22px}.cart-item .ph span{display:none}
+.cat-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin:10px 0 30px}
+.cat-tile{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:20px 12px;border-radius:16px;background:var(--bg-card);border:1px solid var(--border-glow);color:#fff;text-decoration:none;transition:all .3s ease}
+.cat-tile i{font-size:30px;color:var(--accent-cyan);transition:transform .3s ease}
+.cat-tile b{font-size:14px}.cat-tile small{color:var(--text-muted);font-size:12px}
+.cat-tile:hover{transform:translateY(-6px);border-color:var(--border-glow-hover);box-shadow:0 10px 25px rgba(0,242,254,.22)}
+.cat-tile:hover i{transform:scale(1.2) rotate(-6deg)}
+.filter-btn small{opacity:.6;margin-left:4px;font-size:11px}
+.opt-box select{font-size:14px}
+@media (max-width:768px){
+  .chips-row{width:100%;max-width:100%;box-sizing:border-box;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:4px 4px 10px;scrollbar-width:thin}
+  .filter-btn{white-space:nowrap;flex:0 0 auto}
+  .cat-tiles{grid-template-columns:repeat(2,1fr)}
+}
