@@ -1518,3 +1518,26 @@ img{max-width:100%}
 .kind-cut .stage-img{padding:7%;box-sizing:border-box;-webkit-mask-image:radial-gradient(circle closest-side,#000 93%,transparent 100%);mask-image:radial-gradient(circle closest-side,#000 93%,transparent 100%)}
 .kind-cut .stage-img.ph{padding:0}
 @media(max-width:900px){.h3-price{flex-wrap:wrap}.h3p-old{align-items:center}}
+
+/* ===== pie de página: versión compacta para celular ===== */
+.footer2 .f-wa-btn{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:11px 18px;border-radius:999px;background:#25d366;color:#04210f;font-weight:700;font-size:14px}
+.footer2 .f-wa-btn i{width:auto;color:#04210f;font-size:17px}.footer2 .f-wa-btn:hover{filter:brightness(1.08);color:#04210f}
+@media(max-width:900px){.footer2-grid>div:first-child{grid-column:1/-1}}
+@media(max-width:600px){
+  .footer2{margin-top:36px}
+  .footer2-grid{grid-template-columns:1fr 1fr;gap:26px 16px;padding-top:34px;padding-bottom:26px}
+  .footer2-grid>div:first-child{text-align:center}
+  .footer2-grid>div:first-child .brand-logo{justify-content:center}
+  .footer2-grid>div:first-child p{max-width:340px;margin:12px auto}
+  .footer2 .social-icons{justify-content:center}
+  .footer2 h4{margin-bottom:6px;font-size:14px}
+  .footer2 a,.footer2 .f-line{padding:6px 0;font-size:14px}
+  .footer2 .social-icons a{padding:0}
+  .footer2 .f-wa-btn{display:flex;justify-content:center;width:100%;padding:13px 18px}
+  .footer2-grid>div:last-child{grid-column:1/-1;padding:18px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--border-glow)}
+  .footer2-bottom{padding:16px 0 100px}
+  .footer2-bottom .container{align-items:center;text-align:center;font-size:12px;gap:6px}
+}
+/* logo del pie: mismo tamaño en todo el logo (una regla antigua lo dejaba en 14px) */
+.footer2 .brand-logo span,.footer2 .brand-logo span span{font-size:inherit!important;line-height:1.1}
+@media(max-width:600px){.footer2 .brand-logo{font-size:25px}.footer2 .brand-logo i{font-size:23px}}
