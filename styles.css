@@ -1350,3 +1350,74 @@ header.scrolled{padding:8px 0;background:rgba(5,11,20,.95);box-shadow:0 8px 30px
   .f-body{max-height:none}
 }
 body.no-scroll{overflow:hidden}
+
+/* ===== NIKOTECH-DISENO-2: descuentos, hero flexible, footer, responsive ===== */
+/* --- Descuentos llamativos (rojo-naranja) --- */
+@keyframes discPulse{0%,100%{box-shadow:0 8px 22px rgba(255,45,85,.5)}50%{box-shadow:0 8px 32px rgba(255,122,0,.9)}}
+.product-badge{z-index:3;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px}
+.product-badge.disc{top:12px;left:12px;font-size:19px;font-weight:800;font-family:"Poppins",sans-serif;padding:7px 14px;border-radius:12px;color:#fff;border:0;text-transform:none;letter-spacing:.2px;background:linear-gradient(135deg,#ff2d55,#ff7a00);animation:discPulse 2.4s ease-in-out infinite}
+.old-price{color:#ff9aa6;text-decoration:line-through;font-size:13px}
+.disc-pill{display:inline-flex;align-items:center;margin-left:14px;padding:6px 14px;border-radius:12px;vertical-align:middle;background:linear-gradient(135deg,#ff2d55,#ff7a00);color:#fff;font-size:22px;font-weight:800;font-family:"Poppins",sans-serif;box-shadow:0 8px 22px rgba(255,45,85,.45)}
+.detail-old-price{color:#ff9aa6}
+.ref-note{font-size:12.5px;color:var(--text-muted);margin:-4px 0 14px;line-height:1.5}.ref-note:empty{display:none}
+.hero2-disc{position:absolute;right:3%;top:-14px;z-index:4;width:104px;height:104px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff2d55,#ff7a00);color:#fff;font-family:"Poppins",sans-serif;transform:rotate(9deg);animation:discPulse 2.4s ease-in-out infinite;border:3px solid rgba(255,255,255,.9)}
+.hero2-disc b{font-size:30px;line-height:1;font-weight:800}.hero2-disc small{font-size:11px;letter-spacing:1.5px;font-weight:700;margin-top:2px}
+.hero2-chip span s{font-size:13px;font-weight:500;color:#ff9aa6;margin-left:8px}
+/* oferta destacada (inicio) */
+.deal-banner{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.deal-pct{flex:0 0 auto;width:132px;height:132px;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff2d55,#ff7a00);color:#fff;font-family:"Poppins",sans-serif;transform:rotate(-4deg);animation:discPulse 2.4s ease-in-out infinite}
+.deal-pct b{font-size:46px;line-height:1;font-weight:800}.deal-pct small{font-size:13px;letter-spacing:2px;font-weight:700;margin-top:4px}
+.deal-info{flex:1;min-width:220px}
+.deal-tag{display:inline-flex;align-items:center;gap:8px;color:#ffb347;font-weight:700;font-size:13px;letter-spacing:.8px;text-transform:uppercase}
+.deal-prices s{color:#ff9aa6;font-size:17px;margin-right:12px}.deal-prices b{color:#fff;font-size:28px;font-family:"Poppins",sans-serif}
+.promo-big{display:inline-block;padding:6px 16px;border-radius:14px;font-family:"Poppins",sans-serif;font-weight:800;font-size:1.7rem;color:#fff;background:linear-gradient(135deg,#ff2d55,#ff7a00);box-shadow:0 10px 26px rgba(255,45,85,.45);transform:rotate(-2deg)}
+@media(max-width:700px){.deal-banner{justify-content:center;text-align:center}.deal-pct{width:110px;height:110px}.deal-pct b{font-size:38px}.deal-prices b{font-size:24px}}
+/* --- Hero: la altura se ajusta sola al contenido (todas las diapositivas en la misma celda) --- */
+.hero2-track{display:grid;min-height:0}
+.hero2-slide{position:relative;inset:auto;grid-area:1/1}
+@media(min-width:901px){.hero2-track{min-height:470px}}
+@media(max-width:900px){.hero2-track{min-height:0}.hero2-disc{right:8%;top:-10px;width:88px;height:88px}.hero2-disc b{font-size:25px}}
+/* --- Pie de página: logo horizontal e íconos centrados --- */
+.footer2 .brand-logo{display:inline-flex;align-items:center;gap:8px;padding:0;font-size:22px;white-space:nowrap}
+.footer2 .brand-logo span,.footer2 .brand-logo span span{display:inline;padding:0}
+.footer2 .social-icons a{display:flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0}
+.footer2 .social-icons a i{width:auto;margin:0;line-height:1;font-size:18px}
+.footer2 .f-line{display:block;color:var(--text-muted);font-size:14px;padding:5px 0}
+/* --- Responsive general --- */
+html,body{overflow-x:hidden}
+img{max-width:100%}
+@media(max-width:900px){
+  .page-header{padding-top:30px;padding-bottom:20px}.page-header h1{font-size:2rem}
+  .section-title{font-size:1.6rem}
+  .home-section{padding:24px 16px}
+}
+@media(max-width:600px){
+  .container{padding-left:16px;padding-right:16px}
+  .hero2{padding:20px 0 14px}
+  .hero2-copy h1,.hero2-copy .h1like{font-size:1.9rem}
+  .hero2-copy p{font-size:1rem}
+  .hero2-actions .btn-primary,.hero2-actions .btn-ghost{flex:1 1 100%;justify-content:center}
+  .hero2-meta{gap:16px;font-size:13px}.hero2-meta span+span{padding-left:16px}
+  .hero2-ui{gap:8px}.hero2-arrow{width:36px;height:36px}
+  .hero2-dots{gap:6px}.hero2-dot{padding:5px 9px;font-size:11px}
+  .product-badge.disc{font-size:15px;padding:5px 10px;top:8px;left:8px}
+  .product-title{font-size:13px}.product-price{font-size:16px}
+  .add-cart-btn{padding:9px 10px;font-size:12px}
+  .disc-pill{font-size:17px;padding:4px 10px;margin-left:8px}
+  .detail-wrapper{gap:20px}
+  .cat-tiles{gap:10px}.cat-tile{padding:16px 8px}.cat-tile i{width:48px;height:48px;font-size:20px}
+  .brands-track a{padding:10px 18px;font-size:14px}
+  .footer2-grid{gap:24px;padding-top:36px}
+  .wa-float{width:52px;height:52px;right:14px;bottom:14px;font-size:27px}.to-top{right:20px;bottom:76px}
+  .cart-modal .cart-content,.cart-modal>div{max-width:100vw}
+}
+@media(max-width:380px){
+  .topbar{font-size:11.5px}.hero2-copy h1,.hero2-copy .h1like{font-size:1.65rem}
+  .trust-item{padding:12px}.promo-card{padding:20px}.promo-card h3{font-size:1.2rem}
+}
+/* producto: sin desborde en pantallas angostas */
+.detail-wrapper>*{min-width:0}
+@media(max-width:900px){.detail-wrapper{grid-template-columns:minmax(0,1fr)!important}.detail-title{font-size:1.5rem;overflow-wrap:anywhere}.detail-actions>*{max-width:100%}.btn-add-large{width:100%;justify-content:center}.opt-box select{max-width:100%}}
+.hero2-chip{max-width:330px}.hero2-chip span{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.detail-price-box{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}.detail-price-box .disc-pill{margin-left:0}
+.footer2 .brand-logo{font-size:26px}.footer2 .brand-logo i{font-size:24px}
