@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Completo | Nikotechsolutions</title>
-    <link rel="stylesheet" href="styles.css?v=20261027">
+    <link rel="stylesheet" href="styles.css?v=20261028">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="products.js?v=20261027"></script>
+    <script src="products.js?v=20261028"></script>
 </head>
 <body>
 
@@ -60,37 +60,24 @@
             <p>Audio, smartwatch, cargadores, fundas y accesorios de las mejores marcas.</p>
         </section>
 
-        <section class="categories container">
-            <!-- Filtros -->
-            <div class="category-filters">
-                <!-- FILTROS Y ORDENAMIENTO -->
-<div class="catalog-controls">
-    
-    <!-- Categorías -->
-    <div class="category-filters">
-        <button class="filter-btn active" onclick="filterCategory('all', this)">Todos</button>
-        <button class="filter-btn" onclick="filterCategory('laptops', this)">Laptops</button>
-        <button class="filter-btn" onclick="filterCategory('audio', this)">Audio</button>
-        <button class="filter-btn" onclick="filterCategory('smarthome', this)">Smart Home</button>
-        <button class="filter-btn" onclick="filterCategory('perifericos', this)">Periféricos</button>
-        <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
-        <button class="filter-btn" onclick="filterCategory('monitores', this)">Monitores</button>
-    </div>
-
-    <!-- Selector de Orden -->
-    <div class="sort-container">
-        <label for="sortSelect">Ordenar por:</label>
-        <select id="sortSelect" onchange="applySorting()" oninput="applySorting()">
-            <option value="default">Destacados</option>
-            <option value="price-low">Precio: Menor a Mayor</option>
-            <option value="price-high">Precio: Mayor a Menor</option>
-            <option value="name-asc">Nombre: A - Z</option>
-        </select>
-    </div>
-
-</div>
-            <!-- Grilla de Productos (se llena con products.js) -->
-            <div class="products-grid" id="productsGrid" data-catalog="1"></div>
+        <section class="container catalog2">
+            <div class="filters-overlay" id="filtersOverlay" onclick="toggleFilters(false)"></div>
+            <aside class="filters" id="filters" aria-label="Filtros"></aside>
+            <div class="results">
+                <div class="results-bar">
+                    <button class="btn-filters" id="openFilters" onclick="toggleFilters(true)"><i class="fa-solid fa-sliders"></i> Filtros <span id="filterBadge" class="f-badge"></span></button>
+                    <div class="results-count" id="resultCount"></div>
+                    <div class="sort-container"><label for="sortSelect">Ordenar por:</label>
+                        <select id="sortSelect" onchange="applySorting()">
+                            <option value="default">Destacados</option>
+                            <option value="price-low">Precio: menor a mayor</option>
+                            <option value="price-high">Precio: mayor a menor</option>
+                            <option value="name-asc">Nombre: A - Z</option>
+                        </select></div>
+                </div>
+                <div class="active-filters" id="activeFilters"></div>
+                <div class="products-grid" id="productsGrid" data-catalog="1"></div>
+            </div>
         </section>
     </main>
 
