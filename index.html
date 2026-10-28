@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NikoTechSolution | Tienda de Tecnología & Gaming</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20261027">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="products.js"></script>
+    <script src="products.js?v=20261027"></script>
 
 </head>
 <body>
@@ -55,70 +55,14 @@
         </div>
     </div>
 </header>
-<!-- Banner Principal (Slider Automático) -->
-<section class="hero">
-    <div class="container hero-slider">
-        
-        <!-- Diapositiva 1 -->
-        <div class="slide active">
-            <div class="hero-grid">
-                <div class="hero-text">
-                    <h1>LA REVOLUCIÓN TECNOLÓGICA EN TUS MANOS.</h1>
-                    <p>Celulares, audio, smartwatch, computadores y accesorios de las mejores marcas: Samsung, Xiaomi, JBL, Beats, Lenovo, HP y más.</p>
-                    <a href="catalogo.html" class="btn-primary">
-                        EXPLORAR CATÁLOGO <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="hero-image">
-                    <img src="img/092.webp" alt="Setup Gaming NikoTech">
-                </div>
-            </div>
-        </div>
+<!-- Banner principal (carrusel) -->
+<section class="hero2" id="hero2" aria-label="Destacados"></section>
 
-        <!-- Diapositiva 2 -->
-        <div class="slide">
-            <div class="hero-grid">
-                <div class="hero-text">
-                    <h1 style="color: var(--accent-cyan);">AUDIO QUE SE SIENTE.</h1>
-                    <p>Parlantes y audífonos JBL, Beats, Bose, Soundcore y más para cada plan.</p>
-                    <a href="catalogo.html?cat=audio" class="btn-primary">
-                        VER AUDIO <i class="fa-solid fa-headphones"></i>
-                    </a>
-                </div>
-                <div class="hero-image">
-                    <img src="img/031.webp" alt="Laptops Nikotech">
-                </div>
-            </div>
-        </div>
-
-        <!-- Diapositiva 3 -->
-        <div class="slide">
-            <div class="hero-grid">
-                <div class="hero-text">
-                    <h1 style="color: var(--accent-green);">SMARTWATCH PARA TODOS.</h1>
-                    <p>Cubitt, Xiaomi, Fitbit, Samsung y más. Relojes y bandas para cada estilo.</p>
-                    <a href="catalogo.html?cat=smartwatch" class="btn-primary">
-                        VER SMARTWATCH <i class="fa-solid fa-clock"></i>
-                    </a>
-                </div>
-                <div class="hero-image">
-                    <img src="img/085.webp" alt="Oferta Smartwatch">
-                </div>
-            </div>
-        </div>
-
-        <!-- Indicadores (Puntos del Slider) -->
-        <div class="slider-dots">
-            <span class="dot active" onclick="currentSlide(0)"></span>
-            <span class="dot" onclick="currentSlide(1)"></span>
-            <span class="dot" onclick="currentSlide(2)"></span>
-        </div>
-
-    </div>
-</section>
+<!-- Barra de confianza -->
+<section class="container trust" id="trustBar"></section>
 
     <!-- Compra por categoría -->
-    <section class="container" id="categorias">
+    <section class="container home-section" id="categorias">
         <h2 class="section-title">Compra por categoría</h2>
         <div class="cat-tiles" id="catTiles"></div>
     </section>
@@ -126,18 +70,6 @@
     <!-- Sección de Catálogo -->
     <section class="categories container" id="catalogo">
         <h2 class="section-title">Productos destacados</h2>
-
-        <!-- Filtros -->
-        <div class="category-filters">
-            <button class="filter-btn active" onclick="filterCategory('all', this)">Todos</button>
-            <button class="filter-btn" onclick="filterCategory('laptops', this)">Laptops</button>
-            <button class="filter-btn" onclick="filterCategory('audio', this)">Audio</button>
-            <button class="filter-btn" onclick="filterCategory('smarthome', this)">Smart Home</button>
-            <button class="filter-btn" onclick="filterCategory('perifericos', this)">Periféricos</button>
-            <button class="filter-btn" onclick="filterCategory('gaming', this)">Gaming</button>
-            <button class="filter-btn" onclick="filterCategory('monitores', this)">Monitores</button>
-        </div>
-
         <!-- Grilla de Productos -->
         <div class="products-grid" id="productsGrid" data-limit="8"></div>
         
@@ -149,9 +81,15 @@
     </section>
 
     <!-- Oferta del Día -->
-    <section class="container" id="ofertas">
+    <section class="container home-section" id="ofertas">
         <div class="deal-banner" id="dealBanner"></div>
     </section>
+
+    <!-- Promociones -->
+    <section class="container home-section" id="promos"></section>
+
+    <!-- Marcas -->
+    <section class="brands" id="brandStrip"></section>
 
     <!-- Cart Drawer (Carrito) -->
     <div class="cart-modal" id="cartModal">
@@ -205,55 +143,5 @@
             <p>© 2026 NikoTechSolution. Todos los derechos reservados. Alojado en GitHub Pages.</p>
         </div>
     </footer>
-
-    <!-- Script Principal -->
-    <script>
-        /* =========================================================
-             LÓGICA DEL CARRUSEL / SLIDER AUTOMÁTICO
-           ========================================================= */
-let currentSlideIndex = 0;
-const slides = document.querySelectorAll('.slide');
-const dots = document.querySelectorAll('.dot');
-const slideIntervalTime = 5000; // Cambia cada 5 segundos (5000ms)
-let slideTimer;
-
-function showSlide(index) {
-    // Reinicia las clases de las diapositivas y puntos
-    slides.forEach(slide => slide.classList.remove('active'));
-    dots.forEach(dot => dot.classList.remove('active'));
-
-    // Ajusta el índice si sobrepasa los límites
-    if (index >= slides.length) currentSlideIndex = 0;
-    if (index < 0) currentSlideIndex = slides.length - 1;
-
-    // Activa la diapositiva y el punto actual
-    slides[currentSlideIndex].classList.add('active');
-    dots[currentSlideIndex].classList.add('active');
-}
-
-function nextSlide() {
-    currentSlideIndex++;
-    showSlide(currentSlideIndex);
-}
-
-function currentSlide(index) {
-    currentSlideIndex = index;
-    showSlide(currentSlideIndex);
-    resetTimer(); // Reinicia el temporizador si el usuario hace clic en un punto
-}
-
-function startTimer() {
-    slideTimer = setInterval(nextSlide, slideIntervalTime);
-}
-
-function resetTimer() {
-    clearInterval(slideTimer);
-    startTimer();
-}
-
-// Iniciar el carrusel al cargar la página
-startTimer();
-
-    </script>
 </body>
 </html>

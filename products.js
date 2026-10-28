@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('productsGrid')) applySorting('productsGrid');
     const og = document.getElementById('ofertasGrid');
     if (og) { og.dataset.limit = ''; renderProducts(products.filter(p => p.oldPrice && p.price).sort((a, b) => (1 - b.price / b.oldPrice) - (1 - a.price / a.oldPrice)), 'ofertasGrid'); }
-    renderCatTiles(); renderDeal(); renderProductPage(); initAnimations();
+    renderTopbar(); renderFooter(); renderHero(); renderTrust(); renderCatTiles(); renderDeal(); renderPromos(); renderBrands(); renderProductPage(); initAnimations();
 });
 
 
@@ -314,7 +314,7 @@ let revealObs = null;
 function observeReveal(){
     if (REDUCED || !('IntersectionObserver' in window)) return;
     if (!revealObs) revealObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } }), { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-    document.querySelectorAll('.product-card:not(.reveal), .cat-tile:not(.reveal), .section-title:not(.reveal), .deal-banner:not(.reveal), .info-card:not(.reveal), .detail-wrapper:not(.reveal)').forEach((el, i) => {
+    document.querySelectorAll('.product-card:not(.reveal), .cat-tile:not(.reveal), .trust-item:not(.reveal), .promo-card:not(.reveal), .section-title:not(.reveal), .deal-banner:not(.reveal), .info-card:not(.reveal), .detail-wrapper:not(.reveal)').forEach((el, i) => {
         el.classList.add('reveal'); el.style.transitionDelay = (Math.min(i % 6, 5) * 70) + 'ms'; revealObs.observe(el);
     });
 }
@@ -356,3 +356,109 @@ document.addEventListener('error', e => {
     if (t.dataset.ph) { t.replaceWith(phNode(t)); return; }
     if (/\/img\//.test(t.src) && !t.dataset.fb) { t.dataset.fb = 1; t.src = t.src.replace('/img/', '/'); }
 }, true);
+
+
+/* ---------- DISEÑO: barra superior, hero, confianza, promos, marcas, pie ---------- */
+const SITE = { phone: '+57 300 152 3568', email: 'nico_20615@live.com', city: 'Bogotá D.C., Colombia' };
+const HERO = [
+    { icon: 'mobile-screen', eyebrow: 'Celulares', title: 'Tu próximo celular, <em>al mejor precio</em>', text: 'Samsung, Xiaomi y POCO. Elige almacenamiento y color y pídelo por WhatsApp.', cat: 'celulares', pick: 'A17 SM-A175F', cta: 'Ver celulares' },
+    { icon: 'headphones', eyebrow: 'Audio', title: 'Sonido que <em>se siente</em>', text: 'Parlantes y audífonos JBL, Beats, Soundcore, Bose y más para cada plan.', cat: 'audio', pick: 'JBL Clip 5', cta: 'Ver audio' },
+    { icon: 'clock', eyebrow: 'Smartwatch', title: 'Tu día, <em>en tu muñeca</em>', text: 'Cubitt, Xiaomi, Fitbit, Samsung y más. Relojes y bandas para cada estilo.', cat: 'smartwatch', pick: 'VIVA 2', cta: 'Ver smartwatch' },
+    { icon: 'laptop', eyebrow: 'Portátiles', title: 'Potencia para <em>trabajar y estudiar</em>', text: 'ASUS, HP, Lenovo, Acer, Dell y MSI. Elige procesador y memoria.', cat: 'portatiles', pick: 'X1504VA-BQ4375', cta: 'Ver portátiles' },
+    { icon: 'tv', eyebrow: 'Televisores', title: 'Cine en <em>tu sala</em>', text: 'Smart TV Samsung y LG en varios tamaños, listos para conectar.', cat: 'televisores', pick: '55" Q7F', cta: 'Ver televisores' }
+];
+function minPrice(cat){ const a = products.filter(p => p.category === cat && p.price).map(p => p.price); return a.length ? Math.min(...a) : null; }
+function renderTopbar(){
+    if (document.querySelector('.topbar')) return;
+    const d = document.createElement('div'); d.className = 'topbar';
+    d.innerHTML = `<div class="container topbar-in"><span><i class="fa-brands fa-whatsapp"></i> Compra y cotiza por WhatsApp: <a href="${waLink('¡Hola ' + STORE_NAME + '! Quisiera información.')}" target="_blank" rel="noopener">${SITE.phone}</a></span><span class="hide-m"><i class="fa-solid fa-file-invoice"></i> Cotización formal para empresas</span><span class="hide-m"><i class="fa-solid fa-location-dot"></i> ${SITE.city}</span></div>`;
+    document.body.insertBefore(d, document.body.firstChild);
+}
+function renderHero(){
+    const box = document.getElementById('hero2'); if (!box) return;
+    const S = HERO.map(s => {
+        const p = products.find(x => x.category === s.cat && x.title.includes(s.pick)) || products.find(x => x.category === s.cat);
+        return p ? Object.assign({}, s, { p, from: minPrice(s.cat), n: products.filter(x => x.category === s.cat).length }) : null;
+    }).filter(Boolean);
+    if (!S.length) return;
+    box.innerHTML = `<div class="hero2-glow"></div><div class="container hero2-inner">
+      <div class="hero2-track">${S.map((s, i) => `
+        <article class="hero2-slide${i === 0 ? ' is-active' : ''}" aria-hidden="${i !== 0}">
+          <div class="hero2-copy">
+            <span class="eyebrow"><i class="fa-solid fa-${s.icon}"></i> ${s.eyebrow}</span>
+            ${i === 0 ? '<h1>' + s.title + '</h1>' : '<h2 class="h1like">' + s.title + '</h2>'}
+            <p>${s.text}</p>
+            <div class="hero2-actions">
+              <a class="btn-primary" href="catalogo.html?cat=${s.cat}">${s.cta} <i class="fa-solid fa-arrow-right"></i></a>
+              <a class="btn-ghost" target="_blank" rel="noopener" href="${waLink('¡Hola ' + STORE_NAME + '! Quisiera asesoría sobre ' + s.eyebrow.toLowerCase() + '.')}"><i class="fa-brands fa-whatsapp"></i> Pedir asesoría</a>
+            </div>
+            <div class="hero2-meta">${s.from ? `<span>Desde <b>${fmt(s.from)}</b></span>` : ''}<span><b>${s.n}</b> productos</span></div>
+          </div>
+          <div class="hero2-media">
+            <a class="hero2-card" href="producto.html?id=${s.p.id}" tabindex="-1"><img src="${s.p.image}" alt="${esc(s.p.title)}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}${imgAttr(s.p)}></a>
+            <div class="hero2-chip"><small>${s.p.brand ? esc(s.p.brand) : s.eyebrow}</small><b>${esc(s.p.title.length > 38 ? s.p.title.slice(0, 36) + '…' : s.p.title)}</b><span>${s.p.price ? fmt(s.p.price) : 'Consultar'}</span></div>
+          </div>
+        </article>`).join('')}
+      </div>
+      <div class="hero2-ui">
+        <button class="hero2-arrow" id="h2prev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="hero2-dots">${S.map((s, i) => `<button class="hero2-dot${i === 0 ? ' is-active' : ''}" aria-label="${s.eyebrow}"><span>${s.eyebrow}</span></button>`).join('')}</div>
+        <button class="hero2-arrow" id="h2next" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+      </div></div>`;
+    const sl = [...box.querySelectorAll('.hero2-slide')], dots = [...box.querySelectorAll('.hero2-dot')];
+    let cur = 0, timer = null;
+    const go = i => {
+        cur = (i + sl.length) % sl.length;
+        sl.forEach((el, k) => { el.classList.toggle('is-active', k === cur); el.setAttribute('aria-hidden', k !== cur); });
+        dots.forEach((d, k) => { d.classList.remove('is-active'); if (k === cur) { void d.offsetWidth; d.classList.add('is-active'); } });
+    };
+    const play = () => { clearInterval(timer); if (!REDUCED) timer = setInterval(() => go(cur + 1), 6500); };
+    dots.forEach((d, k) => d.onclick = () => { go(k); play(); });
+    box.querySelector('#h2prev').onclick = () => { go(cur - 1); play(); };
+    box.querySelector('#h2next').onclick = () => { go(cur + 1); play(); };
+    box.addEventListener('mouseenter', () => { clearInterval(timer); box.classList.add('paused'); });
+    box.addEventListener('mouseleave', () => { box.classList.remove('paused'); go(cur); play(); });
+    let x0 = null;
+    box.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    box.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) { go(cur + (dx < 0 ? 1 : -1)); play(); } }, { passive: true });
+    play();
+}
+function renderTrust(){
+    const box = document.getElementById('trustBar'); if (!box) return;
+    const items = [
+        ['boxes-stacked', '+' + products.length + ' productos', 'Celulares, computación, audio y más'],
+        ['whatsapp', 'Compra por WhatsApp', 'Te asesoramos y confirmamos disponibilidad', 'fa-brands'],
+        ['file-invoice', 'Cotización formal', 'Para empresas y compras por volumen'],
+        ['award', 'Marcas reconocidas', 'Samsung, Xiaomi, HP, Lenovo, JBL y más']
+    ];
+    box.innerHTML = '<div class="trust-grid">' + items.map(i => `<div class="trust-item"><i class="${i[3] || 'fa-solid'} fa-${i[0]}"></i><div><b>${i[1]}</b><span>${i[2]}</span></div></div>`).join('') + '</div>';
+}
+function renderPromos(){
+    const box = document.getElementById('promos'); if (!box) return;
+    const offers = products.filter(p => p.oldPrice && p.price).length;
+    box.innerHTML = `<div class="promo-grid">
+      ${offers ? `<a class="promo-card promo-a" href="ofertas.html"><span class="eyebrow"><i class="fa-solid fa-tags"></i> Ofertas</span><h3>Precios rebajados en productos seleccionados</h3><p>${offers} productos con descuento. Sujetos a disponibilidad.</p><span class="btn-primary">Ver ofertas <i class="fa-solid fa-arrow-right"></i></span></a>` : ''}
+      <a class="promo-card promo-b" target="_blank" rel="noopener" href="${waLink('¡Hola ' + STORE_NAME + '! Necesito una cotización para mi empresa.')}"><span class="eyebrow"><i class="fa-solid fa-briefcase"></i> Empresas</span><h3>¿Compras para tu empresa u oficina?</h3><p>Te enviamos una cotización formal por WhatsApp o correo.</p><span class="btn-ghost"><i class="fa-brands fa-whatsapp"></i> Pedir cotización</span></a>
+    </div>`;
+}
+function renderBrands(){
+    const box = document.getElementById('brandStrip'); if (!box) return;
+    const c = {}; products.forEach(p => { if (p.brand) c[p.brand] = (c[p.brand] || 0) + 1; });
+    const top = Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 18).map(e => e[0]);
+    const row = top.map(b => `<a href="catalogo.html?brand=${encodeURIComponent(b)}">${esc(b)}</a>`).join('');
+    box.innerHTML = `<div class="container"><h2 class="section-title">Marcas que manejamos</h2></div><div class="brands-mask"><div class="brands-track">${row}${row}</div></div>`;
+}
+function renderFooter(){
+    let f = document.querySelector('footer');
+    if (!f) { f = document.createElement('footer'); document.body.appendChild(f); }
+    f.id = 'contacto'; f.className = 'footer2';
+    const cats = ['celulares', 'audio', 'smartwatch', 'portatiles', 'televisores', 'cargadores'].map(id => CATEGORIES.find(c => c.id === id)).filter(Boolean);
+    f.innerHTML = `<div class="container footer2-grid">
+      <div><a href="index.html" class="brand-logo"><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i><span style="color:#fff">Nikotech<span style="color:var(--accent-cyan)">solutions</span></span></a>
+        <p>Tecnología, accesorios y equipos de las mejores marcas. Compra fácil por WhatsApp y cotización formal para empresas.</p>
+        <div class="social-icons"><a href="${waLink('¡Hola ' + STORE_NAME + '!')}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a><a href="mailto:${SITE.email}" aria-label="Correo"><i class="fa-solid fa-envelope"></i></a></div></div>
+      <div><h4>Comprar</h4>${cats.map(c => `<a href="catalogo.html?cat=${c.id}">${esc(c.name)}</a>`).join('')}</div>
+      <div><h4>Tienda</h4><a href="index.html">Inicio</a><a href="catalogo.html">Catálogo completo</a><a href="ofertas.html">Ofertas</a><a href="contacto.html">Contacto</a></div>
+      <div><h4>Contacto</h4><a target="_blank" rel="noopener" href="${waLink('¡Hola ' + STORE_NAME + '!')}"><i class="fa-brands fa-whatsapp"></i> ${SITE.phone}</a><a href="mailto:${SITE.email}"><i class="fa-solid fa-envelope"></i> ${SITE.email}</a><span><i class="fa-solid fa-location-dot"></i> ${SITE.city}</span></div>
+    </div><div class="footer2-bottom"><div class="container"><span>© 2026 ${STORE_NAME}. Todos los derechos reservados.</span><span>Precios en pesos colombianos (COP). Sujetos a disponibilidad.</span></div></div>`;
+}
