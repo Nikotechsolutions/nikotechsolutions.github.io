@@ -1541,3 +1541,29 @@ img{max-width:100%}
 /* logo del pie: mismo tamaño en todo el logo (una regla antigua lo dejaba en 14px) */
 .footer2 .brand-logo span,.footer2 .brand-logo span span{font-size:inherit!important;line-height:1.1}
 @media(max-width:600px){.footer2 .brand-logo{font-size:25px}.footer2 .brand-logo i{font-size:23px}}
+
+/* ===== NIKOTECH-CATEGORIAS-HORIZONTAL (franja de categorías del catálogo) ===== */
+.cat-strip-wrap{padding-top:4px;padding-bottom:2px}
+.cs-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cs-head h2{font-family:"Poppins",sans-serif;font-size:1.25rem}
+.cs-arrows{display:flex;gap:8px}
+.cs-arrows button{width:38px;height:38px;border-radius:50%;border:1px solid var(--border-glow);background:rgba(12,22,44,.9);color:var(--accent-cyan);cursor:pointer;transition:all .2s ease}
+.cs-arrows button:hover:not(:disabled){background:var(--accent-cyan);color:#001018}.cs-arrows button:disabled{opacity:.3;cursor:default}
+.cat-strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:8px 6px 16px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
+.cat-strip::-webkit-scrollbar{display:none}
+.cs-tile{position:relative;flex:0 0 134px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 10px 12px;border-radius:18px;background:linear-gradient(180deg,#0e1b38,#0a1630);border:1px solid var(--border-glow);color:#fff;cursor:pointer;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease,background .25s ease}
+.cs-tile:hover{transform:translateY(-5px);border-color:rgba(0,242,254,.6);box-shadow:0 14px 30px rgba(0,242,254,.18)}
+.cs-img{width:86px;height:86px;border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 30% 20%,#17386a,#0a1630 75%);border:1px dashed rgba(0,242,254,.25);transition:transform .3s ease}
+.cs-img.has-img{background:#fff;border:0}
+.cs-img i{font-size:30px;color:var(--accent-cyan)}
+.cs-img img{width:100%;height:100%;object-fit:contain;padding:7px;box-sizing:border-box}
+.cs-tile:hover .cs-img{transform:scale(1.07)}
+.cs-tile b{display:flex;align-items:center;justify-content:center;min-height:34px;text-align:center;font-size:13.5px;line-height:1.25;font-weight:600}
+.cs-tile small{color:var(--text-muted);font-size:11.5px}
+.cs-tile.is-active{border-color:var(--accent-cyan);background:linear-gradient(180deg,rgba(0,242,254,.17),#0a1630);box-shadow:0 0 0 1px var(--accent-cyan),0 14px 34px rgba(0,242,254,.24)}
+.cs-tile.is-active::after{content:'\2713';position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--accent-cyan);color:#001018;font-weight:800;font-size:13px}
+.catalog2{scroll-margin-top:92px}
+@media(max-width:900px){.cs-arrows{display:none}.cs-tile{flex-basis:112px;padding:12px 8px 10px}.cs-img{width:70px;height:70px}.cs-head h2{font-size:1.1rem}.cs-tile b{font-size:12.5px}}
+/* franja de categorías: sin desvanecer la primera/última tarjeta */
+.cat-strip{padding:8px 14px 16px;margin:0 -14px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)}
+.cat-strip{scroll-padding:0 14px}

@@ -219,6 +219,8 @@ function refreshCatalogUI(n){
     const rc = document.getElementById('resultCount');
     if (rc) rc.innerHTML = `<b>${n}</b> producto${n === 1 ? '' : 's'}` + (state.cat !== 'all' ? ` en <b>${esc(catName(state.cat))}</b>` : '');
     const h = document.querySelector('.page-header h1'); if (h) h.textContent = state.cat !== 'all' ? catName(state.cat) : 'Catálogo completo';
+    const ph = document.querySelector('.page-header p'); if (ph) ph.textContent = state.cat === 'all' ? 'Celulares, computadores, audio, televisores, accesorios y más de las mejores marcas.' : 'Explora ' + catName(state.cat).toLowerCase() + ' de las mejores marcas.';
+    updateStripActive();
     const bd = document.getElementById('filterBadge'), c = activeCount(); if (bd) { bd.textContent = c; bd.style.display = c ? 'inline-flex' : 'none'; }
     syncURL();
 }
@@ -314,6 +316,52 @@ function bindFilters(){
         else if (r === 'q') { state.q = ''; const si = document.getElementById('searchInput'); if (si) si.value = ''; }
         applySorting('productsGrid');
     });
+}
+
+/* ---------- FRANJA DE CATEGORÍAS (catálogo, estilo tienda grande) ---------- */
+function setCategory(id){ state.cat = id; state.brands.clear(); state.f = {}; applySorting('productsGrid'); }
+function stripCandidates(cat){
+    return products.filter(p => p.category === cat && p.image).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || a.id - b.id).slice(0, 8);
+}
+function stripLoadImg(list, i, box){
+    if (!box || i >= list.length) return;
+    const im = new Image();
+    im.onload = () => { box.classList.add('has-img'); box.innerHTML = ''; im.alt = ''; box.appendChild(im); };
+    im.onerror = () => stripLoadImg(list, i + 1, box);
+    im.src = list[i].image;
+}
+function updateStripActive(){
+    const el = document.getElementById('catStrip'); if (!el) return;
+    el.querySelectorAll('.cs-tile').forEach(t => t.classList.toggle('is-active', t.dataset.c === state.cat));
+    const a = el.querySelector('.cs-tile.is-active');
+    if (a && !el._centered) { el._centered = true; el.scrollTo({ left: Math.max(0, a.offsetLeft - (el.clientWidth - a.clientWidth) / 2) }); }
+    csArrows();
+}
+function csArrows(){
+    const el = document.getElementById('catStrip'), p = document.getElementById('csPrev'), n = document.getElementById('csNext'); if (!el || !p) return;
+    p.disabled = el.scrollLeft < 8; n.disabled = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+}
+function renderCatStrip(){
+    if (!document.querySelector('[data-catalog]') || document.getElementById('catStrip')) return;
+    const anchor = document.querySelector('.catalog2'); if (!anchor) return;
+    const wrap = document.createElement('section'); wrap.className = 'container cat-strip-wrap';
+    wrap.innerHTML = `<div class="cs-head"><h2>Compra por categoría</h2><div class="cs-arrows"><button id="csPrev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button><button id="csNext" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button></div></div><div class="cat-strip" id="catStrip"></div>`;
+    anchor.parentNode.insertBefore(wrap, anchor);
+    const el = document.getElementById('catStrip');
+    const cats = [{ id: 'all', name: 'Todas' }].concat(CATEGORIES.filter(c => products.some(p => p.category === c.id)));
+    el.innerHTML = cats.map(c => {
+        const n = c.id === 'all' ? products.length : products.filter(p => p.category === c.id).length;
+        return `<button class="cs-tile" data-c="${c.id}" aria-label="${esc(c.name)}"><span class="cs-img" data-c="${c.id}"><i class="fa-solid fa-${c.id === 'all' ? 'border-all' : (CAT_ICON[c.id] || 'box')}"></i></span><b>${esc(c.name)}</b><small>${n} producto${n === 1 ? '' : 's'}</small></button>`;
+    }).join('');
+    cats.forEach(c => { if (c.id !== 'all') stripLoadImg(stripCandidates(c.id), 0, el.querySelector('.cs-img[data-c="' + c.id + '"]')); });
+    el.addEventListener('click', e => {
+        const t = e.target.closest('.cs-tile'); if (!t) return;
+        setCategory(t.dataset.c);
+        const r = document.querySelector('.catalog2'); if (r && r.getBoundingClientRect().top > window.innerHeight * 0.55) r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.getElementById('csPrev').onclick = () => el.scrollBy({ left: -el.clientWidth * 0.75, behavior: 'smooth' });
+    document.getElementById('csNext').onclick = () => el.scrollBy({ left: el.clientWidth * 0.75, behavior: 'smooth' });
+    el.addEventListener('scroll', csArrows, { passive: true });
 }
 
 /* ---------- CATEGORÍAS (inicio) ---------- */
@@ -472,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (params.get('min')) state.pmin = parseInt(params.get('min')) || null;
     if (params.get('max')) state.pmax = parseInt(params.get('max')) || null;
     if (params.get('q')) { state.q = params.get('q').toLowerCase(); const si = document.getElementById('searchInput'); if (si) { si.value = params.get('q'); document.getElementById('searchBox') && document.getElementById('searchBox').classList.add('active'); } }
+    renderCatStrip();
     bindFilters();
     if (document.getElementById('productsGrid')) applySorting('productsGrid');
     const og = document.getElementById('ofertasGrid');
