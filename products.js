@@ -449,18 +449,21 @@ function sampleCorners(im){
         if (!im || im.tagName !== 'IMG' || !im.naturalWidth) return null;
         const c = document.createElement('canvas'), w = 24, h = 24; c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0, w, h);
         const pts = [[1, 1], [w - 2, 1], [1, h - 2], [w - 2, h - 2], [w >> 1, 1], [w >> 1, h - 2]]; let r = 0, g = 0, b = 0;
-        pts.forEach(([px, py]) => { const d = x.getImageData(px, py, 1, 1).data; r += d[0]; g += d[1]; b += d[2]; });
-        r /= pts.length; g /= pts.length; b /= pts.length; return { r, g, b, lum: 0.299 * r + 0.587 * g + 0.114 * b };
+        let al = 0;
+        pts.forEach(([px, py]) => { const d = x.getImageData(px, py, 1, 1).data; r += d[0]; g += d[1]; b += d[2]; al += d[3]; });
+        r /= pts.length; g /= pts.length; b /= pts.length; al /= pts.length; return { r, g, b, a: al, lum: 0.299 * r + 0.587 * g + 0.114 * b };
     } catch (e) { return null; }
 }
+function markCut(im){ const s = sampleCorners(im); if (s) im.classList.toggle('is-cut', s.a < 40); return s; }
+document.addEventListener('load', e => { const t = e.target; if (t && t.tagName === 'IMG' && !t.classList.contains('stage-img')) markCut(t); }, true);
 function fitDetailImg(im){
     if (!im) return;
-    const run = () => { const s = sampleCorners(im); if (!s) return; im.style.background = s.lum < 150 ? `rgb(${s.r | 0},${s.g | 0},${s.b | 0})` : ''; };
+    const run = () => { const s = markCut(im); if (!s) return; im.style.background = (s.a >= 40 && s.lum < 150) ? `rgb(${s.r | 0},${s.g | 0},${s.b | 0})` : ''; };
     if (im.complete && im.naturalWidth) run(); else im.addEventListener('load', run, { once: true });
 }
 function fitStage(im){
     const st = im.closest && im.closest('.h3-stage'); if (!st) return; const s = sampleCorners(im); if (!s) return;
-    const light = s.lum > 200 && Math.max(Math.abs(s.r - s.g), Math.abs(s.g - s.b), Math.abs(s.r - s.b)) < 35;
+    const light = s.a < 40 || (s.lum > 200 && Math.max(Math.abs(s.r - s.g), Math.abs(s.g - s.b), Math.abs(s.r - s.b)) < 35);
     const want = (st.dataset.kind === 'photo' || !light) ? 'photo' : 'cut';
     st.classList.toggle('kind-cut', want === 'cut'); st.classList.toggle('kind-photo', want === 'photo');
     const d = st.querySelector('.stage-disc'); if (d) d.style.display = want === 'cut' ? '' : 'none';
