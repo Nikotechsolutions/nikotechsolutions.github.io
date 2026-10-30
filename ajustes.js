@@ -5,6 +5,7 @@ const AJ_DESTACADOS = [769, 18, 26, 30, 85, 207, 211, 221];
 
 /* 2) CAMBIOS DE PRECIO (precio, antes = precio tachado, antes: 0 quita el tachado). */
 const AJ_PRECIOS = {
+  767: { opciones: { "256 GB · eSIM (virtual)": { colores: { "Borgoña": 5450000 } } } },
 };
 
 /* 3) PRODUCTOS OCULTOS (ID separados por coma). */
