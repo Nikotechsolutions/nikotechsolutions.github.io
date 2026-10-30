@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envíos y entregas | Nikotechsolutions</title>
+    <meta name="description" content="Cuánto cuesta el envío, cuándo se despacha tu pedido y qué hacer al recibirlo.">
+    <link rel="stylesheet" href="styles.css?v=20261104">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="products.js?v=20261104"></script>
+    <script>document.write('<script src="ajustes.js?t='+Math.floor(Date.now()/300000)+'"><\/script>');</script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
+    <link rel="shortcut icon" href="favicon.ico?v=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
+    <meta name="theme-color" content="#050b14">
+</head>
+<body>
+    <header>
+        <div class="container nav-container">
+            <!-- Logo -->
+            <a href="index.html" class="brand-logo">
+                <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i>
+                <span style="color: #fff;">Nikotech<span style="color: var(--accent-cyan); text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);">solutions</span></span>
+            </a>
+
+            <!-- Enlaces del Menú -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="ofertas.html">Ofertas</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+
+            <!-- Acciones del Header -->
+            <div class="header-actions">
+                <!-- Buscador (Lupita) -->
+                <div class="search-box" id="searchBox">
+                    <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar...">
+                </div>
+
+                <!-- Carrito -->
+                <div class="cart-btn" onclick="toggleCart()">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <div class="cart-count" id="cartCount">0</div>
+                </div>
+
+                <!-- Botón Menú Hamburguesa (3 Líneas) -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container info-wrap">
+        <aside class="info-nav"><b>Información</b><a href="garantias.html" class=""><i class="fa-solid fa-shield-halved"></i> Garantías y devoluciones</a><a href="envios.html" class="is-on"><i class="fa-solid fa-truck-fast"></i> Envíos y entregas</a><a href="pagos.html" class=""><i class="fa-solid fa-credit-card"></i> Métodos de pago</a><a href="terminos.html" class=""><i class="fa-solid fa-file-contract"></i> Términos y condiciones</a><a href="privacidad.html" class=""><i class="fa-solid fa-user-shield"></i> Política de datos y cookies</a></aside>
+        <article class="info-body">
+            <div class="info-top"><span class="info-ico"><i class="fa-solid fa-truck-fast"></i></span><div><h1>Envíos y entregas</h1><p>Cuánto cuesta el envío, cuándo se despacha tu pedido y qué hacer al recibirlo.</p></div></div>
+<div class="info-cards"><div class="info-card2"><i class="fa-solid fa-location-dot"></i><b>Bogotá: envío gratis</b><span>Entregas sin costo dentro de Bogotá D.C.</span></div><div class="info-card2"><i class="fa-solid fa-truck-fast"></i><b>Todo el país</b><span>Enviamos a otras ciudades con transportadoras. El costo depende del destino y del paquete.</span></div><div class="info-card2"><i class="fa-solid fa-eye"></i><b>Sin cobros ocultos</b><span>Te mostramos el costo del envío antes de que pagues.</span></div></div>
+<section class="info-sec"><h2>1. Bogotá D.C.</h2><p>Los pedidos con entrega en Bogotá D.C. <b>no tienen costo de envío</b>. Coordinamos la entrega contigo por WhatsApp o correo.</p></section>
+<section class="info-sec"><h2>2. Otras ciudades de Colombia</h2><p>Despachamos a todo el país mediante transportadoras. El valor del envío depende de:</p><ul><li><b>El destino:</b> la ciudad o municipio de entrega.</li><li><b>El tamaño y el peso del paquete:</b> un cargador no cuesta lo mismo que un televisor.</li><li><b>El valor del pedido,</b> cuando la transportadora cobra por valor declarado.</li></ul></section>
+<section class="info-sec"><h2>3. Cuánto cuesta tu envío</h2><p>Escribe tu ciudad en el pago y verás el valor al instante. Si todavía no tenemos la tarifa para tu destino, te la confirmamos por WhatsApp <b>antes</b> de que pagues.</p><div class="ship-table" id="shipTable"></div></section>
+<section class="info-sec"><h2>4. Despacho y tiempos</h2><p>Despachamos después de confirmar el pago. Te informamos el tiempo estimado de entrega al confirmar tu pedido, y te enviamos el <b>número de guía</b> para que sigas tu paquete.</p></section>
+<section class="info-sec"><h2>5. Al recibir tu pedido</h2><ul><li>Revisa que el empaque esté sellado y sin daños antes de firmar.</li><li>Si notas golpes, humedad o el paquete abierto, repórtalo a la transportadora y a nosotros el mismo día, con fotos.</li><li>Te recomendamos grabar un video al abrir el paquete: nos ayuda a gestionar cualquier novedad.</li></ul></section>
+<section class="info-sec"><h2>6. Direcciones y reenvíos</h2><p>Verifica tu dirección y tus datos de contacto al comprar. Si el paquete no se puede entregar por una dirección incorrecta o por ausencia del destinatario, el costo de reenvío corre por cuenta del comprador.</p></section>
+
+            <p class="info-foot">Última actualización: 29 de octubre de 2026. Este documento es informativo y se interpreta conforme a la ley colombiana (Ley 1480 de 2011, Ley 1581 de 2012 y normas que las modifiquen). ¿Dudas? Escríbenos por <a href="https://wa.me/573001523568" target="_blank" rel="noopener">WhatsApp</a> o a <a href="mailto:nico_20615@live.com">nico_20615@live.com</a>.</p>
+        </article>
+    </main>
+
+    <!-- Cart Drawer (Carrito) -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3>Tu Carrito</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items del carrito -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal" style="color: var(--accent-cyan);">$0</span>
+            </div>
+            <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('shipTable'); if (!el || typeof shipCfg !== 'function') return;
+        const c = shipCfg(), nom = { pequeno: 'Paquete pequeño (cargadores, cables, fundas, audífonos, relojes, celulares)', mediano: 'Paquete mediano (tablets, portátiles)', grande: 'Paquete grande (monitores, televisores, equipos de escritorio)' };
+        const rows = Object.keys(nom).map(k => `<div class="ship-row"><span>${nom[k]}</span><b>${c.tarifas[k] ? fmt(c.tarifas[k]) : 'Se confirma por WhatsApp'}</b></div>`).join('');
+        el.innerHTML = `<div class="ship-row ship-free"><span>Bogotá D.C.</span><b>Gratis</b></div>` + rows + '<small>Tarifas de referencia para otras ciudades; pueden variar según el destino.</small>';
+    });
+    </script>
+</body>
+</html>

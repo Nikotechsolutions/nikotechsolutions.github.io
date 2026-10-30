@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métodos de pago | Nikotechsolutions</title>
+    <meta name="description" content="Con qué puedes pagar y cómo confirmamos tu pedido.">
+    <link rel="stylesheet" href="styles.css?v=20261104">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="products.js?v=20261104"></script>
+    <script>document.write('<script src="ajustes.js?t='+Math.floor(Date.now()/300000)+'"><\/script>');</script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
+    <link rel="shortcut icon" href="favicon.ico?v=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
+    <meta name="theme-color" content="#050b14">
+</head>
+<body>
+    <header>
+        <div class="container nav-container">
+            <!-- Logo -->
+            <a href="index.html" class="brand-logo">
+                <i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i>
+                <span style="color: #fff;">Nikotech<span style="color: var(--accent-cyan); text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);">solutions</span></span>
+            </a>
+
+            <!-- Enlaces del Menú -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="ofertas.html">Ofertas</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+
+            <!-- Acciones del Header -->
+            <div class="header-actions">
+                <!-- Buscador (Lupita) -->
+                <div class="search-box" id="searchBox">
+                    <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar...">
+                </div>
+
+                <!-- Carrito -->
+                <div class="cart-btn" onclick="toggleCart()">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <div class="cart-count" id="cartCount">0</div>
+                </div>
+
+                <!-- Botón Menú Hamburguesa (3 Líneas) -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container info-wrap">
+        <aside class="info-nav"><b>Información</b><a href="garantias.html" class=""><i class="fa-solid fa-shield-halved"></i> Garantías y devoluciones</a><a href="envios.html" class=""><i class="fa-solid fa-truck-fast"></i> Envíos y entregas</a><a href="pagos.html" class="is-on"><i class="fa-solid fa-credit-card"></i> Métodos de pago</a><a href="terminos.html" class=""><i class="fa-solid fa-file-contract"></i> Términos y condiciones</a><a href="privacidad.html" class=""><i class="fa-solid fa-user-shield"></i> Política de datos y cookies</a></aside>
+        <article class="info-body">
+            <div class="info-top"><span class="info-ico"><i class="fa-solid fa-credit-card"></i></span><div><h1>Métodos de pago</h1><p>Con qué puedes pagar y cómo confirmamos tu pedido.</p></div></div>
+<div class="info-cards"><div class="info-card2"><i class="fa-solid fa-building-columns"></i><b>Transferencia, Nequi o Llave</b><span>Pagas desde tu banco o billetera y nos envías el comprobante.</span></div><div class="info-card2"><i class="fa-solid fa-credit-card"></i><b>Wompi</b><span>Tarjetas, PSE y otros medios, en la plataforma segura de Wompi.</span></div><div class="info-card2"><i class="fa-solid fa-hand-holding-dollar"></i><b>Addi</b><span>Compra ahora y paga a cuotas, sujeto a aprobación de Addi.</span></div></div>
+<section class="info-sec"><h2>1. Medios disponibles</h2><p>En el momento de pagar verás los medios que están disponibles. Algunos medios se activan de forma gradual:</p><ul><li><b>Transferencia bancaria, Nequi y Llave:</b> pagas desde tu app y nos envías el comprobante con tu número de pedido.</li><li><b>Wompi:</b> pagas con tarjeta de crédito o débito, PSE y demás medios que Wompi habilite, en su plataforma segura.</li><li><b>Addi:</b> financias tu compra en cuotas. La aprobación, los intereses y las cuotas los define Addi, no Nikotechsolutions.</li></ul></section>
+<section class="info-sec"><h2>2. Datos para transferencias</h2><div id="payData" class="pay-data"></div></section>
+<section class="info-sec"><h2>3. Cómo confirmamos tu pedido</h2><ul><li>Al finalizar la compra recibes un <b>número de pedido</b>.</li><li>Tu pedido queda <b>pendiente</b> hasta que confirmemos el pago.</li><li>Reservamos los productos mientras validamos tu pago, sujeto a disponibilidad.</li><li>Cuando el pago se confirma, preparamos tu envío y te avisamos.</li></ul></section>
+<section class="info-sec"><h2>4. Seguridad</h2><p>No almacenamos datos de tarjetas: los pagos con tarjeta se procesan en la plataforma de Wompi. <b>Nunca te pediremos claves, códigos de seguridad ni contraseñas.</b> Paga únicamente a las cuentas que aparecen en esta página o que te enviemos por nuestros canales oficiales.</p></section>
+<section class="info-sec"><h2>5. Precios</h2><p>Los precios están en pesos colombianos (COP). Si aplica algún impuesto o recargo, te lo informamos antes de que pagues. Si necesitas una cotización formal o soporte de tu compra, solicítalo al comprar.</p></section>
+
+            <p class="info-foot">Última actualización: 29 de octubre de 2026. Este documento es informativo y se interpreta conforme a la ley colombiana (Ley 1480 de 2011, Ley 1581 de 2012 y normas que las modifiquen). ¿Dudas? Escríbenos por <a href="https://wa.me/573001523568" target="_blank" rel="noopener">WhatsApp</a> o a <a href="mailto:nico_20615@live.com">nico_20615@live.com</a>.</p>
+        </article>
+    </main>
+
+    <!-- Cart Drawer (Carrito) -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3>Tu Carrito</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items del carrito -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal" style="color: var(--accent-cyan);">$0</span>
+            </div>
+            <button class="btn-whatsapp" onclick="checkoutWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('payData'); if (!el || typeof payCfg !== 'function') return;
+        const t = payCfg().transferencia, rows = [];
+        (t.bancos || []).forEach(b => { if (b && b.numero) rows.push(`<div class="pay-row"><i class="fa-solid fa-building-columns"></i><div><b>${esc(b.banco || 'Banco')} · ${esc(b.tipo || '')}</b><span>${esc(b.numero)}${t.titular ? ' · Titular: ' + esc(t.titular) : ''}</span></div></div>`); });
+        if (t.nequi) rows.push(`<div class="pay-row"><i class="fa-solid fa-mobile-screen"></i><div><b>Nequi</b><span>${esc(t.nequi)}${t.titular ? ' · ' + esc(t.titular) : ''}</span></div></div>`);
+        if (t.llave) rows.push(`<div class="pay-row"><i class="fa-solid fa-key"></i><div><b>Llave</b><span>${esc(t.llave)}${t.titular ? ' · ' + esc(t.titular) : ''}</span></div></div>`);
+        el.innerHTML = rows.length ? rows.join('') : '<p>Te enviamos los datos de pago con tu número de pedido, por WhatsApp o por correo. Así evitamos errores y fraudes.</p>';
+    });
+    </script>
+</body>
+</html>
