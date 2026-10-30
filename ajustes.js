@@ -1,31 +1,33 @@
-/* =====================================================================
-   AJUSTES DE TU TIENDA  (este archivo es SOLO tuyo: yo no lo piso)
-   ---------------------------------------------------------------------
-   Lo más fácil: abre  nikotechsolutions.github.io/panel.html , haz clic
-   en lo que quieras cambiar y copia el texto que te genera aquí.
-   También puedes editarlo a mano: respeta comas, llaves y comillas.
-   ===================================================================== */
+/* AJUSTES DE TU TIENDA — generado con panel.html. Puedes seguir usando el panel para cambiarlo. */
 
-/* 1) PRODUCTOS DESTACADOS de la portada, en el orden que quieras.
-      Pon los números (ID) separados por coma. Entre 4 y 12 productos. */
+/* 1) PRODUCTOS DESTACADOS de la portada, en orden (ID separados por coma). Entre 4 y 12. */
 const AJ_DESTACADOS = [769, 18, 26, 30, 85, 207, 211, 221];
 
-/* 2) CAMBIAR PRECIOS.  Ejemplos (quita las // para activarlos):
-      787: { precio: 1800000 },                       // precio nuevo
-      787: { precio: 1800000, antes: 2100000 },       // con precio anterior tachado (y % de descuento)
-      787: { antes: 0 },                              // quita el precio tachado
-      769: { opciones: { "256 GB · eSIM (virtual)": { precio: 4170000, antes: 6999000 } } },   // producto con opciones */
+/* 2) CAMBIOS DE PRECIO (precio, antes = precio tachado, antes: 0 quita el tachado). */
 const AJ_PRECIOS = {
 };
 
-/* 3) OCULTAR productos (no aparecen en la tienda). Pon los ID separados por coma. */
+/* 3) PRODUCTOS OCULTOS (ID separados por coma). */
 const AJ_OCULTOS = [];
 
-/* 4) CAMBIAR EL NOMBRE de un producto.  Ejemplo:  769: "iPhone 17 Pro Max Nuevo", */
+/* 4) NOMBRES CAMBIADOS. */
 const AJ_NOMBRES = {
 };
 
-/* 5) CAMBIAR UNA IMAGEN.  Sube la foto a la carpeta img (puede ser .jpg, .png o .webp)
-      y escribe su nombre.  Ejemplo:  769: "mi-iphone.jpg", */
+/* 5) IMÁGENES CAMBIADAS (archivo dentro de la carpeta img). */
 const AJ_IMAGENES = {
 };
+
+/* 6) CONTRASEÑA DEL PANEL EN LÍNEA. No la escribas aquí: se crea desde el panel (aquí solo se guarda su huella). */
+const AJ_PANEL_CLAVE = "";
+
+/* 7) ESTILO DEL BANNER de la portada: "escenario" (nuevo) o "clasico" (anterior). */
+const AJ_BANNER = "escenario";
+
+/* 8) PRODUCTO DE CADA DIAPOSITIVA del banner (opcional): categoría: ID. */
+const AJ_BANNER_PRODUCTOS = {
+};
+
+/* 9) ESTADÍSTICAS DE VISITAS (opcional). ID de Google Analytics (empieza por G-) y/o token de Cloudflare Web Analytics. Vacío = sin estadísticas. */
+const AJ_ANALITICA = "G-SBCSC04SSM";
+const AJ_CLOUDFLARE = "";
