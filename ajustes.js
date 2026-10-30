@@ -1,7 +1,7 @@
 /* AJUSTES DE TU TIENDA — generado con panel.html. Puedes seguir usando el panel para cambiarlo. */
 
 /* 1) PRODUCTOS DESTACADOS de la portada, en orden (ID separados por coma). Entre 4 y 12. */
-const AJ_DESTACADOS = [769, 10001, 30, 85, 211, 221];
+const AJ_DESTACADOS = [769, 10001, 30, 221];
 
 /* 2) CAMBIOS DE PRECIO (precio, antes = precio tachado, antes: 0 quita el tachado). */
 const AJ_PRECIOS = {
@@ -45,3 +45,4 @@ const AJ_COLORES = {
 const AJ_NUEVOS = [
   {"id":10001,"titulo":"Apple Watch SE 3 GPS 40mm","marca":"Apple","categoria":"smartwatch","precio":1050000,"antes":1599000,"imagen":"Apple_Watch_SE_3_GPS_40mm.webp","descripcion":"El Apple Watch SE 3 reúne funcionalidades esenciales de salud a un precio irresistible. Lleva un registro completo de tu sueño, tu ciclo y tu actividad diaria con los círculos de Moverse, Ejercicio y Pararse. Cuenta con Siri AI, tu asistente personal siempre disponible, y una ayuda que está siempre a la mano ante caídas o emergencias.","caracteristicas":["Resistencia al agua hasta 100m, para actividades como buceo","Resistente Caja de Titanio y pantalla de cristal de zafiro","Monitorea arritmias y protege tu salud cardiaca","IA avanzada, Siri AI y audio inteligente en tu muñeca"]},
 ];
+
