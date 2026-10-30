@@ -34,5 +34,5 @@ const AJ_CLOUDFLARE = "";
 
 /* 10) COLORES: foto de cada color, colores ocultos y color que se muestra primero. */
 const AJ_COLORES = {
-  767: { imagenes: { "Borgoña": "18PROMAXBORGONA.webp" } },
+  767: { imagenes: { "Borgoña": "18PROMAXBORGONA.webp", "Negro": "iphone18promaxnegro.webp" } },
 };
