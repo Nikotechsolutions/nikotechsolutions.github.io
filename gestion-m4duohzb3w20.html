@@ -42,6 +42,12 @@
         .pr-edit input{padding:9px 10px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%;min-width:0}
         .pr-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
         .pr-opt{padding:10px;border-radius:10px;border:1px dashed rgba(255,255,255,.15)}.pr-opt>b{display:block;font-size:12.5px;margin-bottom:6px;color:#e6fbff;font-weight:600}
+        .pr-colors{display:grid;gap:8px;padding:10px;border-radius:10px;border:1px dashed rgba(255,255,255,.15)}
+        .pr-color{display:grid;grid-template-columns:22px 110px 1fr auto;gap:8px;align-items:center}.pr-color b{font-size:13px;color:#e6fbff;font-weight:600}
+        .sw-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.45)}
+        .pr-color .chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin:0;white-space:nowrap}.pr-color .chk input{width:auto}
+        .pr-cp{margin-top:8px}.pr-cp summary{cursor:pointer;font-size:12.5px;color:var(--accent-cyan)}.pr-cp .cprow{display:grid;grid-template-columns:22px 1fr 150px;gap:8px;align-items:center;margin-top:6px;font-size:12.5px;color:#cbd5e1}
+        @media(max-width:560px){.pr-color{grid-template-columns:22px 1fr}.pr-color input[type=text],.pr-color input:not([type]){grid-column:1/-1}.pr-cp .cprow{grid-template-columns:22px 1fr}.pr-cp .cprow input{grid-column:1/-1}}
         .pr-hint{font-size:11.5px;color:var(--text-muted)}
         .pn-side{position:sticky;top:92px;display:grid;gap:16px;max-height:calc(100vh - 110px);overflow:auto}
         .pn-card{padding:16px;border-radius:18px;background:linear-gradient(180deg,#0d1a36,#0a1630);border:1px solid var(--border-glow)}
@@ -163,13 +169,14 @@ const S = {
     banner: has('AJ_BANNER') && AJ_BANNER ? AJ_BANNER : 'escenario',
     bprod: has('AJ_BANNER_PRODUCTOS') && AJ_BANNER_PRODUCTOS ? Object.assign({}, AJ_BANNER_PRODUCTOS) : {},
     ga: has('AJ_ANALITICA') && AJ_ANALITICA ? AJ_ANALITICA : '',
-    cf: has('AJ_CLOUDFLARE') && AJ_CLOUDFLARE ? AJ_CLOUDFLARE : ''
+    cf: has('AJ_CLOUDFLARE') && AJ_CLOUDFLARE ? AJ_CLOUDFLARE : '',
+    colores: has('AJ_COLORES') && AJ_COLORES ? JSON.parse(JSON.stringify(AJ_COLORES)) : {}
 };
 const $ = id => document.getElementById(id);
 let shownN = 30, openId = null;
 const num = v => { const n = parseInt(String(v).replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; };
 const catSel = $('cat'); CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; catSel.appendChild(o); });
-const modified = id => !!(S.precios[id] || S.nombres[id] || S.imagenes[id] || S.ocultos.has(id));
+const modified = id => !!(S.precios[id] || S.nombres[id] || S.imagenes[id] || S.colores[id] || S.ocultos.has(id));
 function effPrice(p){
     const c = S.precios[p.id] || {};
     if (hasOpts(p)) return { price: p.price, old: p.oldPrice };
@@ -196,10 +203,18 @@ function editHTML(p){
     const c = S.precios[p.id] || {};
     let h = `<label>Nombre en la tienda<input data-f="nombre" value="${esc(S.nombres[p.id] || p.title)}"></label>
              <label>Imagen (nombre del archivo que subiste a la carpeta img, ej. mi-foto.jpg)<input data-f="imagen" placeholder="${p.id}.webp" value="${esc(S.imagenes[p.id] || '')}"></label>`;
+    const allC = p.colorsAll || p.colors || [];
+    if (allC.length) {
+        const cc = S.colores[p.id] || {}, imgs = cc.imagenes || {}, hid = cc.ocultos || [], def = cc.defecto || p.defColor || allC[0].n;
+        h += `<div class="pr-colors"><div class="pr-hint"><b>Colores.</b> Escribe el nombre de la foto de cada color (el archivo que subiste a la carpeta img, ej. mi-foto.jpg) y marca cuáles se muestran.</div>` +
+            allC.map(k => `<div class="pr-color"><span class="sw-dot" style="background:${k.h}"></span><b>${esc(k.n)}</b><input type="text" data-f="c-img" data-c="${esc(k.n)}" placeholder="${p.id}-${slug(k.n)}.webp" value="${esc(imgs[k.n] || '')}"><label class="chk"><input type="checkbox" data-f="c-show" data-c="${esc(k.n)}" ${hid.includes(k.n) ? '' : 'checked'}> Mostrar</label></div>`).join('') +
+            `<label>Color que se muestra primero<select data-f="c-def">${allC.map(k => `<option value="${esc(k.n)}" ${k.n === def ? 'selected' : ''}>${esc(k.n)}</option>`).join('')}</select></label></div>`;
+    }
     if (hasOpts(p)) {
         h += '<div class="pr-hint">Este producto tiene opciones. Cambia el precio de cada una:</div>' + p.options.map(o => {
             const oc = ((c.opciones || {})[o.label]); const x = (oc && typeof oc === 'object') ? oc : (oc ? { precio: oc } : {});
-            return `<div class="pr-opt"><b>${esc(o.label)}</b><div class="pr-row2"><label>Precio<input data-f="o-precio" data-o="${esc(o.label)}" inputmode="numeric" value="${x.precio || o.price || ''}"></label><label>Antes (tachado)<input data-f="o-antes" data-o="${esc(o.label)}" inputmode="numeric" placeholder="${o.old || 'vacío = sin cambio'}" value="${'antes' in x ? x.antes : ''}"></label></div></div>`;
+            const cpx = allC.length ? `<details class="pr-cp" ${Object.keys(o.cp || {}).length || Object.keys(x.colores || {}).length ? 'open' : ''}><summary>Precio según el color (vacío = igual al precio de arriba; 0 = quitar)</summary>${allC.map(k => `<div class="cprow"><span class="sw-dot" style="background:${k.h}"></span><span>${esc(k.n)}</span><input inputmode="numeric" data-f="o-cp" data-o="${esc(o.label)}" data-c="${esc(k.n)}" placeholder="igual" value="${(x.colores && x.colores[k.n]) || (o.cp && o.cp[k.n]) || ''}"></div>`).join('')}</details>` : '';
+            return `<div class="pr-opt"><b>${esc(o.label)}</b><div class="pr-row2"><label>Precio<input data-f="o-precio" data-o="${esc(o.label)}" inputmode="numeric" value="${x.precio || o.price || ''}"></label><label>Antes (tachado)<input data-f="o-antes" data-o="${esc(o.label)}" inputmode="numeric" placeholder="${o.old || 'vacío = sin cambio'}" value="${'antes' in x ? x.antes : ''}"></label></div>${cpx}</div>`;
         }).join('');
     } else {
         h += `<div class="pr-row2"><label>Precio<input data-f="precio" inputmode="numeric" value="${c.precio || p.price || ''}"></label><label>Antes (precio tachado)<input data-f="antes" inputmode="numeric" placeholder="${p.oldPrice || 'vacío = sin cambio'}" value="${'antes' in c ? c.antes : ''}"></label></div>`;
@@ -232,7 +247,7 @@ function out(){
     Object.keys(S.precios).forEach(id => {
         const c = S.precios[id], parts = [];
         if (c.precio) parts.push(`precio: ${c.precio}`); if ('antes' in c && c.antes !== undefined) parts.push(`antes: ${c.antes}`);
-        if (c.opciones && Object.keys(c.opciones).length) parts.push('opciones: { ' + Object.entries(c.opciones).map(([k, v]) => { const x = (v && typeof v === 'object') ? v : { precio: v }; const q = []; if (x.precio) q.push('precio: ' + x.precio); if ('antes' in x && x.antes !== undefined) q.push('antes: ' + x.antes); return J(k) + ': { ' + q.join(', ') + ' }'; }).join(', ') + ' }');
+        if (c.opciones && Object.keys(c.opciones).length) parts.push('opciones: { ' + Object.entries(c.opciones).map(([k, v]) => { const x = (v && typeof v === 'object') ? v : { precio: v }; const q = []; if (x.precio) q.push('precio: ' + x.precio); if ('antes' in x && x.antes !== undefined) q.push('antes: ' + x.antes); if (x.colores && Object.keys(x.colores).length) q.push('colores: { ' + Object.entries(x.colores).map(([a, b]) => J(a) + ': ' + b).join(', ') + ' }'); return J(k) + ': { ' + q.join(', ') + ' }'; }).join(', ') + ' }');
         if (parts.length) L.push(`  ${id}: { ${parts.join(', ')} },`);
     });
     L.push('};', '', '/* 3) PRODUCTOS OCULTOS (ID separados por coma). */', `const AJ_OCULTOS = [${[...S.ocultos].join(', ')}];`, '');
@@ -242,6 +257,7 @@ function out(){
     L.push('/* 7) ESTILO DEL BANNER de la portada: "escenario" (nuevo) o "clasico" (anterior). */', `const AJ_BANNER = ${J(S.banner || 'escenario')};`, '');
     L.push('/* 8) PRODUCTO DE CADA DIAPOSITIVA del banner (opcional): categoría: ID. */', 'const AJ_BANNER_PRODUCTOS = {', ...Object.entries(S.bprod).filter(([k, v]) => v).map(([k, v]) => `  ${k}: ${v},`), '};', '');
     L.push('/* 9) ESTADÍSTICAS DE VISITAS (opcional). ID de Google Analytics (empieza por G-) y/o token de Cloudflare Web Analytics. Vacío = sin estadísticas. */', `const AJ_ANALITICA = ${J(S.ga || '')};`, `const AJ_CLOUDFLARE = ${J(S.cf || '')};`, '');
+    L.push('/* 10) COLORES: foto de cada color, colores ocultos y color que se muestra primero. */', 'const AJ_COLORES = {', ...Object.entries(S.colores).map(([id, cc]) => { const q = []; if (cc.defecto) q.push('defecto: ' + J(cc.defecto)); if (cc.imagenes && Object.keys(cc.imagenes).length) q.push('imagenes: { ' + Object.entries(cc.imagenes).map(([a, b]) => J(a) + ': ' + J(b)).join(', ') + ' }'); if (cc.ocultos && cc.ocultos.length) q.push('ocultos: [' + cc.ocultos.map(z => J(z)).join(', ') + ']'); return q.length ? `  ${id}: { ${q.join(', ')} },` : ''; }).filter(Boolean), '};', '');
     $('out').value = L.join('\n');
 }
 // eventos
@@ -259,6 +275,18 @@ $('plist').addEventListener('change', e => {
     else if (f === 'imagen') { if (v) S.imagenes[id] = v; else delete S.imagenes[id]; }
     else if (f === 'precio') { const n = num(v); if (n) c.precio = n; else delete c.precio; }
     else if (f === 'antes') { if (v === '') delete c.antes; else c.antes = num(v) || 0; }
+    else if (f === 'c-img' || f === 'c-show' || f === 'c-def') {
+        const cc = S.colores[id] = S.colores[id] || {}, col = t.dataset.c, allC = p.colorsAll || p.colors || [];
+        if (f === 'c-img') { cc.imagenes = cc.imagenes || {}; if (v) cc.imagenes[col] = v; else delete cc.imagenes[col]; if (!Object.keys(cc.imagenes).length) delete cc.imagenes; }
+        else if (f === 'c-show') { cc.ocultos = cc.ocultos || []; const i = cc.ocultos.indexOf(col); if (t.checked) { if (i >= 0) cc.ocultos.splice(i, 1); } else if (i < 0) cc.ocultos.push(col); if (!cc.ocultos.length) delete cc.ocultos; }
+        else { if (v) cc.defecto = v; else delete cc.defecto; }
+        if (!Object.keys(cc).length) delete S.colores[id];
+    }
+    else if (f === 'o-cp') {
+        c.opciones = c.opciones || {}; const lab = t.dataset.o, col = t.dataset.c; const x = (c.opciones[lab] && typeof c.opciones[lab] === 'object') ? c.opciones[lab] : (c.opciones[lab] ? { precio: c.opciones[lab] } : {});
+        x.colores = x.colores || {}; const n = num(v); x.colores[col] = n || 0; if (v === '' ) { const o = p.options.find(z => z.label === lab); if (!(o && o.cp && o.cp[col])) delete x.colores[col]; }
+        if (!Object.keys(x.colores).length) delete x.colores; if (Object.keys(x).length) c.opciones[lab] = x; else delete c.opciones[lab];
+    }
     else if (f === 'o-precio' || f === 'o-antes') {
         c.opciones = c.opciones || {}; const lab = t.dataset.o; const x = (c.opciones[lab] && typeof c.opciones[lab] === 'object') ? c.opciones[lab] : (c.opciones[lab] ? { precio: c.opciones[lab] } : {});
         if (f === 'o-precio') { const n = num(v); if (n) x.precio = n; else delete x.precio; } else { if (v === '') delete x.antes; else x.antes = num(v) || 0; }

@@ -428,6 +428,7 @@ function renderProductPage(){
       </div>
       <section class="categories container"><h2 class="section-title">También te puede interesar</h2><div class="products-grid" id="relatedGrid"></div></section>`;
     if (hasOpts(p)) onOptChange(p.id);
+    fitDetailImg(box.querySelector('.detail-image-container img'));
     box.querySelectorAll('.swatches .sw').forEach(b => b.addEventListener('click', () => selectColor(p.id, b.dataset.color)));
     if (selColor && p.defColor) swapColorImage(p, selColor);
     track('view_item', { currency: 'COP', value: p.price || 0, items: [gaItem(p, '', 1)] });
@@ -443,9 +444,30 @@ function detailPriceHTML(p, o, color){
     const x = offerOf(p, o, color);
     return `${x.old ? `<span class="detail-old-price">${fmt(x.old)}</span>` : ''}<span>${fmt(x.price)}</span>${x.pct ? `<span class="disc-pill">-${x.pct}%</span>` : ''}`;
 }
+function sampleCorners(im){
+    try {
+        if (!im || im.tagName !== 'IMG' || !im.naturalWidth) return null;
+        const c = document.createElement('canvas'), w = 24, h = 24; c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0, w, h);
+        const pts = [[1, 1], [w - 2, 1], [1, h - 2], [w - 2, h - 2], [w >> 1, 1], [w >> 1, h - 2]]; let r = 0, g = 0, b = 0;
+        pts.forEach(([px, py]) => { const d = x.getImageData(px, py, 1, 1).data; r += d[0]; g += d[1]; b += d[2]; });
+        r /= pts.length; g /= pts.length; b /= pts.length; return { r, g, b, lum: 0.299 * r + 0.587 * g + 0.114 * b };
+    } catch (e) { return null; }
+}
+function fitDetailImg(im){
+    if (!im) return;
+    const run = () => { const s = sampleCorners(im); if (!s) return; im.style.background = s.lum < 150 ? `rgb(${s.r | 0},${s.g | 0},${s.b | 0})` : ''; };
+    if (im.complete && im.naturalWidth) run(); else im.addEventListener('load', run, { once: true });
+}
+function fitStage(im){
+    const st = im.closest && im.closest('.h3-stage'); if (!st) return; const s = sampleCorners(im); if (!s) return;
+    const light = s.lum > 200 && Math.max(Math.abs(s.r - s.g), Math.abs(s.g - s.b), Math.abs(s.r - s.b)) < 35;
+    const want = (st.dataset.kind === 'photo' || !light) ? 'photo' : 'cut';
+    st.classList.toggle('kind-cut', want === 'cut'); st.classList.toggle('kind-photo', want === 'photo');
+    const d = st.querySelector('.stage-disc'); if (d) d.style.display = want === 'cut' ? '' : 'none';
+}
 let selColor = null;
 function slug(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-function colorImg(p, name){ return 'img/' + p.id + '-' + slug(name) + '.webp'; }
+function colorImg(p, name){ const f = p.colorImgs && p.colorImgs[name]; if (f) return /^(https?:|img\/)/.test(f) ? f : 'img/' + f; return 'img/' + p.id + '-' + slug(name) + '.webp'; }
 function colorsHTML(p){
     if (!p.colors || !p.colors.length) return '';
     return `<div class="opt-box color-box"><label>Color: <b id="colorName">${esc(selColor || '')}</b></label><div class="swatches">${p.colors.map(c => `<button type="button" class="sw${c.n === selColor ? ' is-on' : ''}" style="--c:${c.h}" data-color="${esc(c.n)}" title="${esc(c.n)}" aria-label="Color ${esc(c.n)}"></button>`).join('')}</div><small class="color-note" id="imgNote"></small></div>`;
@@ -453,7 +475,7 @@ function colorsHTML(p){
 function swapColorImage(p, name){
     const box = document.querySelector('.detail-image-container'); if (!box) return;
     const note = document.getElementById('imgNote'), url = colorImg(p, name), im = new Image();
-    im.onload = () => { box.innerHTML = ''; im.alt = p.title + ' ' + name; box.appendChild(im); if (note) note.textContent = ''; };
+    im.onload = () => { box.innerHTML = ''; im.alt = p.title + ' ' + name; box.appendChild(im); fitDetailImg(im); if (note) note.textContent = ''; };
     im.onerror = () => { if (note) note.textContent = 'Foto ilustrativa: el color puede variar.'; };
     im.src = url;
 }
@@ -679,6 +701,7 @@ function applyAjustes(){
             Object.entries(c.opciones).forEach(([lab, v]) => {
                 const o = p.options.find(o => o.label === lab); if (!o) return; const x = pr(v);
                 if (x.precio) o.price = x.precio;
+                if (x.colores) { o.cp = Object.assign({}, o.cp || {}); Object.entries(x.colores).forEach(([k, v]) => { if (v) o.cp[k] = v; else delete o.cp[k]; }); if (!Object.keys(o.cp).length) delete o.cp; }
                 if ('antes' in x) { touchedOld = true; if (x.antes) o.old = x.antes; else delete o.old; }
             });
             const base = p.options.reduce((a, o) => (!a || o.price < a.price) ? o : a, null);
@@ -691,6 +714,13 @@ function applyAjustes(){
             const pct = Math.round((1 - p.price / p.oldPrice) * 100);
             if (pct >= 3) p.badge = '-' + pct + '%'; else if (p.badge && p.badge[0] === '-') delete p.badge;
         } else if (p.badge && p.badge[0] === '-') delete p.badge;
+    });
+    products.forEach(p => { if (p.colors && !p.colorsAll) p.colorsAll = p.colors.slice(); });
+    if (has('AJ_COLORES')) Object.entries(AJ_COLORES).forEach(([id, c]) => {
+        const p = getP(+id); if (!p || !p.colorsAll || !c) return;
+        p.colors = p.colorsAll.filter(x => !(c.ocultos || []).includes(x.n)); if (!p.colors.length) p.colors = p.colorsAll.slice();
+        if (c.defecto && p.colors.some(x => x.n === c.defecto)) p.defColor = c.defecto; else if (p.defColor && !p.colors.some(x => x.n === p.defColor)) delete p.defColor;
+        if (c.imagenes) p.colorImgs = Object.assign({}, c.imagenes);
     });
     if (has('AJ_DESTACADOS') && AJ_DESTACADOS.length) {
         products.forEach(p => { p.featured = false; delete p.fr; });
@@ -841,7 +871,9 @@ function heroSlides(){
     return HERO.map(s => {
         let p = ov[s.cat] ? getP(+ov[s.cat]) : null;
         p = p || products.find(x => x.category === s.cat && x.title.includes(s.pick)) || products.find(x => x.category === s.cat);
-        return p ? Object.assign({}, s, { p, from: minPrice(s.cat), n: products.filter(x => x.category === s.cat).length }) : null;
+        if (!p) return null;
+        const cp = (p.defColor && p.colors && p.colors.some(c => c.n === p.defColor)) ? p.defColor : s.colorPick;
+        return Object.assign({}, s, { p, from: minPrice(s.cat), n: products.filter(x => x.category === s.cat).length, colorPick: p.colors ? cp : s.colorPick });
     }).filter(Boolean);
 }
 function chipsFor(p){
@@ -885,7 +917,7 @@ function renderHero3(){
             </div>
             <ul class="h3-perks"><li><i class="fa-brands fa-whatsapp"></i> Pide por WhatsApp</li><li><i class="fa-solid fa-file-invoice"></i> Cotización formal</li></ul>
           </div>
-          <div class="h3-stage kind-${kind}"><div class="stage-par"><div class="stage-layer">
+          <div class="h3-stage kind-${kind}" data-kind="${kind}"><div class="stage-par"><div class="stage-layer">
             ${kind === 'cut' ? '<div class="stage-disc"></div>' : ''}
             <a class="stage-link" href="producto.html?id=${p.id}" tabindex="-1"><img class="stage-img" src="${heroSrc(s)}" ${s.colorPick && p.colors ? 'data-fallback="' + p.image + '" ' : ''}alt="${esc(p.title)}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}${imgAttr(p)}></a>
             ${chipsFor(p).map((c, k) => `<span class="stage-chip sc${k + 1}">${esc(c)}</span>`).join('')}
@@ -900,6 +932,7 @@ function renderHero3(){
         <div class="hero3-nav">${S.map((s, i) => `<button class="h3-tab${i === 0 ? ' is-active' : ''}" style="--t1:${th(s)[0]}" aria-label="${s.eyebrow}"><img src="${s.p.image}" alt="" loading="lazy"${imgAttr(s.p)}><span><small>${s.eyebrow}</small><b>${esc(short(s.p.title))}</b></span></button>`).join('')}
           <div class="h3-arrows"><button id="h3prev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button><button id="h3next" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button></div></div>
       </div>`;
+    box.querySelectorAll('.stage-img').forEach(im => { const f = () => fitStage(im); if (im.complete && im.naturalWidth) f(); im.addEventListener('load', f); });
     const sl = [...box.querySelectorAll('.h3-slide')], bg = [...box.querySelectorAll('.h3-bg')], tabs = [...box.querySelectorAll('.h3-tab')];
     let cur = 0, timer = null;
     const go = i => {
