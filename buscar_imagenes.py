@@ -28,18 +28,33 @@ OUT = 'img'
 REV = 'revision'
 LOG = os.path.join(REV, 'imagenes_log.csv')
 UA = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'}
-MALOS = ('pinterest', 'facebook', 'instagram', 'alamy', 'shutterstock', 'istockphoto', 'gettyimages', 'dreamstime', '123rf',
+MALOS = ('canva', 'etsy', 'pinterest', 'facebook', 'instagram', 'alamy', 'shutterstock', 'istockphoto', 'gettyimages', 'dreamstime', '123rf',
          'depositphotos', 'tiktok', 'youtube', 'ytimg', 'twimg')
 
 
-def limpiar(producto, marca):
+ALIAS = {'POCO': 'Xiaomi POCO', 'Galaxy': 'Samsung Galaxy'}
+CATPAL = {'celulares': 'smartphone', 'tablets': 'tablet', 'portatiles': 'laptop', 'computadores': 'computador', 'monitores': 'monitor',
+          'televisores': 'smart tv', 'audio': 'audífonos', 'smartwatch': 'smartwatch', 'cargadores': 'cargador', 'perifericos': '',
+          'almacenamiento': '', 'impresion': 'impresora', 'redes': '', 'hogar': '', 'energia': '', 'software': 'licencia caja', 'fundas': 'funda'}
+
+
+def limpiar(producto, marca, categoria='', nivel=1):
     p = re.sub(r'\(ref\.[^)]*\)', '', producto)
     p = re.sub(r'\((versión CN|variante \d)\)', '', p, flags=re.I)
     p = p.replace('"', ' pulgadas ').replace('”', ' ')
     p = re.sub(r'\s+', ' ', p).strip()
     if marca and marca.lower() not in p.lower():
         p = marca + ' ' + p
-    return p
+    for k, v in ALIAS.items():                      # evita palabras ambiguas (p. ej. "Poco")
+        p = re.sub(r'\b%s\b' % re.escape(k), v, p, count=1, flags=re.I) if (k.lower() in p.lower() and v.lower() not in p.lower()) else p
+    if nivel >= 2:                                  # búsqueda más simple: sin tipo ni código largo
+        p = re.sub(r'^(Celular|Portátil|Tablet|Televisor|Todo en uno|Memoria USB|Disco)\s+', '', p, flags=re.I)
+        p = re.sub(r'\b[A-Z]{2,3}-[A-Z0-9]{3,}\b', '', p)
+    if nivel >= 3:
+        p = ' '.join(p.split()[:4])
+    pal = CATPAL.get(categoria, '')
+    if pal and pal.lower() not in p.lower(): p += ' ' + pal
+    return re.sub(r'\s+', ' ', p).strip()
 
 
 def buscar(consulta, n=12):
@@ -50,7 +65,34 @@ def buscar(consulta, n=12):
     return DDGS().images(consulta, max_results=n) or []
 
 
-def candidatos(resultados):
+GENERICAS = {'celular', 'portatil', 'portátil', 'tablet', 'televisor', 'memoria', 'disco', 'para', 'con', 'smartwatch', 'audifonos', 'audífonos',
+             'cargador', 'adaptador', 'mouse', 'teclado', 'monitor', 'impresora', 'router', 'switch', 'licencia', 'smart', 'gaming', 'inalambrico'}
+
+
+def relevante(r, producto, marca=''):
+    """El resultado debe mencionar el modelo COMO PALABRA COMPLETA (no dentro de un código al azar) y, si hay marca, la marca."""
+    raw = ((r.get('title') or '') + ' ' + (r.get('url') or '') + ' ' + (r.get('image') or '')).lower()
+    words = set(re.split(r'[^a-z0-9]+', raw)); joined = raw.replace('-', '').replace(' ', '')
+    p = re.sub(r'\(.*?\)', ' ', producto).lower()
+    if marca:
+        b = re.sub(r'[^a-z0-9]', '', marca.lower())
+        if b and b not in joined and not (b == 'xiaomi' and ('redmi' in words or 'poco' in words)): return False
+    modelos = [t.replace('-', '') for t in re.findall(r'[a-z0-9\-]*\d[a-z0-9\-]*', p) if len(t.replace('-', '')) >= 2 and not re.fullmatch(r'\d+(gb|tb|w|mah|hz|mm|pulgadas)?', t)]
+    if modelos:
+        segs = set(modelos)
+        for t in re.findall(r'[a-z0-9\-]*\d[a-z0-9\-]*', p):
+            for seg in t.split('-'):
+                if len(seg) >= 5 and re.search(r'\d', seg) and re.search(r'[a-z]', seg): segs.add(seg)
+        for m in segs:
+            if len(m) < 5:                     # modelos cortos (s25, a07, c71, 17): solo como palabra completa
+                if m in words or any(w.startswith(m) and not w[len(m):len(m)+1].isdigit() for w in words if len(w) <= len(m) + 3 and w.startswith(m)): return True
+            elif m in joined: return True
+        return False
+    palabras = [w for w in re.findall(r'[a-záéíóúñ]{4,}', p) if w not in GENERICAS]
+    return sum(1 for w in palabras if w.replace(' ', '') in joined) >= min(2, max(1, len(palabras)))
+
+
+def candidatos(resultados, producto='', marca='', filtrar=True, exigir=''):
     ok = []
     for r in resultados:
         url = r.get('image') or ''
@@ -59,6 +101,8 @@ def candidatos(resultados):
         if re.search(r'\.(svg|gif)(\?|$)', url, re.I): continue
         w, h = int(r.get('width') or 0), int(r.get('height') or 0)
         if w and h and (min(w, h) < 350 or not (0.55 <= w / h <= 1.8)): continue
+        if filtrar and producto and not relevante(r, producto, marca): continue
+        if exigir and not re.search(exigir, ((r.get('title') or '') + ' ' + (r.get('url') or '') + ' ' + (r.get('image') or '')).lower()): continue
         ok.append(r)
     return ok
 
@@ -120,12 +164,14 @@ def main():
     ap.add_argument('--ids', default='')
     ap.add_argument('--categoria', default='')
     ap.add_argument('--intento', type=int, default=1, help='usar el N-ésimo resultado válido (2 = la segunda foto)')
+    ap.add_argument('--sin-filtro', action='store_true', help='aceptar resultados aunque no mencionen el modelo (puede traer fotos equivocadas)')
     ap.add_argument('--forzar', action='store_true', help='reemplazar fotos que ya existen')
     ap.add_argument('--solo-hojas', action='store_true')
     ap.add_argument('--pausa', type=float, default=2.0)
+    ap.add_argument('--sufijo', default='', help='palabras extra para la búsqueda, p. ej. --sufijo "celular png"')
     a = ap.parse_args()
     with open(a.csv, newline='', encoding='utf-8-sig') as f:
-        filas = [{'archivo': r['archivo (nombre exacto)'], 'producto': r['producto'], 'marca': r['marca'], 'categoria': r['categoria']} for r in csv.DictReader(f, delimiter=';')]
+        filas = [{'archivo': r['archivo (nombre exacto)'], 'producto': r['producto'], 'marca': r['marca'], 'categoria': r['categoria'], 'exigir': (r.get('exigir_color') or '').strip()} for r in csv.DictReader(f, delimiter=';')]
     os.makedirs(OUT, exist_ok=True); os.makedirs(REV, exist_ok=True)
     if a.solo_hojas:
         print('Hojas generadas con', hojas(filas), 'fotos en', REV); return
@@ -140,22 +186,27 @@ def main():
     ok = 0
     try:
         for i, f in enumerate(sel, 1):
-            q = limpiar(f['producto'], f['marca']); estado = 'sin resultado'; url = pag = ''
-            for intento in range(3):
-                try:
-                    cands = candidatos(buscar(q)); break
-                except Exception as e:
-                    cands = []; estado = 'error de búsqueda: ' + str(e)[:60]; time.sleep(8 * (intento + 1))
-            usados = 0
-            for c in cands:
-                usados += 1
-                if usados < a.intento: continue
-                try:
-                    im = descargar(c['image']); out = procesar(im)
-                    out.save(os.path.join(OUT, f['archivo']), 'WEBP', quality=82, method=6)
-                    url, pag, estado = c['image'], c.get('url', ''), 'ok'; ok += 1; break
-                except Exception as e:
-                    estado = 'no se pudo descargar: ' + str(e)[:50]
+            estado = 'sin resultado'; url = pag = ''; q = ''
+            for nivel in (1, 2, 3):
+                q = limpiar(f['producto'], f['marca'], f['categoria'], nivel) + (' ' + a.sufijo if a.sufijo else '')
+                cands = []
+                for intento in range(3):
+                    try:
+                        cands = candidatos(buscar(q), f['producto'], f['marca'], not a.sin_filtro, f.get('exigir', '')); break
+                    except Exception as e:
+                        estado = 'error de búsqueda: ' + str(e)[:60]; time.sleep(8 * (intento + 1))
+                usados = 0
+                for c in cands:
+                    usados += 1
+                    if usados < a.intento: continue
+                    try:
+                        im = descargar(c['image']); out = procesar(im)
+                        out.save(os.path.join(OUT, f['archivo']), 'WEBP', quality=82, method=6)
+                        url, pag, estado = c['image'], c.get('url', ''), 'ok'; ok += 1; break
+                    except Exception as e:
+                        estado = 'no se pudo descargar: ' + str(e)[:50]
+                if estado == 'ok': break
+                time.sleep(1)
             host = urlparse(url).netloc if url else '-'
             print(f"[{i}/{len(sel)}] {f['archivo']:10} {f['producto'][:44]:44} {'✓ ' + host if estado == 'ok' else '✗ ' + estado}")
             w.writerow([f['archivo'], f['producto'], q, url, pag, estado]); log.flush()
