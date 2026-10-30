@@ -31,3 +31,8 @@ const AJ_BANNER_PRODUCTOS = {
 /* 9) ESTADÍSTICAS DE VISITAS (opcional). ID de Google Analytics (empieza por G-) y/o token de Cloudflare Web Analytics. Vacío = sin estadísticas. */
 const AJ_ANALITICA = "G-SBCSC04SSM";
 const AJ_CLOUDFLARE = "";
+
+/* 10) COLORES: foto de cada color, colores ocultos y color que se muestra primero. */
+const AJ_COLORES = {
+  767: { imagenes: { "Borgoña": "https://exitocol.vtexassets.com/arquivos/ids/35399133/iphone-18-pro-max-5gb-256gb-12gb-ram-borgona.jpg?v=639257778556670000" } },
+};
