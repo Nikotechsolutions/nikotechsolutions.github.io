@@ -704,7 +704,23 @@ function initAnalytics(){
 
 /* ---------- AJUSTES DEL DUEÑO (archivo ajustes.js / panel.html) ---------- */
 function legacyKeys(obj){ if (!obj || typeof obj !== 'object') return obj; const o = {}; Object.entries(obj).forEach(([k, v]) => { o[LEGACY_COLORS[k] || k] = v; }); return o; }
+function makeNuevo(n){
+    const price = Number(n.precio) || 0, antes = Number(n.antes) || 0, id = Number(n.id);
+    const cat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.some(c => c.id === n.categoria)) ? n.categoria : 'accesorios';
+    const p = { id, title: String(n.titulo || '').trim(), brand: String(n.marca || '').trim(), category: cat, price,
+        description: String(n.descripcion || '').trim(), features: (n.caracteristicas || []).map(x => String(x).trim()).filter(Boolean),
+        image: n.imagen ? (/^(https?:|img\/)/.test(n.imagen) ? n.imagen : 'img/' + n.imagen) : 'img/' + id + '.webp', ph: 1, manual: true, f: {} };
+    const ops = (n.opciones || []).filter(o => o && String(o.etiqueta || '').trim());
+    if (ops.length) { p.options = ops.map(o => ({ label: String(o.etiqueta).trim(), price: Number(o.precio) || price })); const ps = p.options.map(o => o.price).filter(Boolean); if (ps.length) p.price = Math.min(...ps); }
+    if (antes > p.price && p.price) { const pct = Math.round((1 - p.price / antes) * 100); if (pct >= 3) { p.oldPrice = antes; p.badge = '-' + pct + '%'; } }
+    return p;
+}
+function addNuevos(){
+    if (typeof AJ_NUEVOS === 'undefined' || !Array.isArray(AJ_NUEVOS)) return;
+    AJ_NUEVOS.slice().reverse().forEach(n => { if (!n || !n.id || !n.titulo || ALL_PRODUCTS.some(x => x.id === +n.id)) return; const p = makeNuevo(n); products.unshift(p); ALL_PRODUCTS.unshift(p); });
+}
 function applyAjustes(){
+    addNuevos();
     const has = n => { try { return typeof eval(n) !== 'undefined'; } catch (e) { return false; } };
     if (has('AJ_OCULTOS') && AJ_OCULTOS.length) { const s = new Set(AJ_OCULTOS); for (let i = products.length - 1; i >= 0; i--) if (s.has(products[i].id)) products.splice(i, 1); }
     if (has('AJ_NOMBRES')) Object.entries(AJ_NOMBRES).forEach(([id, n]) => { const p = getP(+id); if (p && n) p.title = n; });

@@ -48,6 +48,11 @@
         .pr-color .chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin:0;white-space:nowrap}.pr-color .chk input{width:auto}
         .pr-cp{margin-top:8px}.pr-cp summary{cursor:pointer;font-size:12.5px;color:var(--accent-cyan)}.pr-cp .cprow{display:grid;grid-template-columns:22px 1fr 150px;gap:8px;align-items:center;margin-top:6px;font-size:12.5px;color:#cbd5e1}
         @media(max-width:560px){.pr-color{grid-template-columns:22px 1fr}.pr-color input[type=text],.pr-color input:not([type]){grid-column:1/-1}.pr-cp .cprow{grid-template-columns:22px 1fr}.pr-cp .cprow input{grid-column:1/-1}}
+        .nv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.nv-grid label{display:block;color:#cbd5e1;font-size:13px}.nv-grid label small{color:var(--text-muted)}
+        .nv-grid input,.nv-grid select,.nv-grid textarea{display:block;width:100%;margin-top:6px;padding:11px 12px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;font-family:inherit}
+        .nv-grid textarea{min-height:76px;resize:vertical}.nv-full{grid-column:1/-1}.nv-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}.nv-msg{color:#ffb347;font-size:13px;margin-top:10px;min-height:16px}
+        .pn-btn.primary{background:linear-gradient(90deg,var(--accent-cyan),#00a8ff);color:#001018;border:0;font-weight:800}
+        @media(max-width:560px){.nv-grid{grid-template-columns:1fr}}
         .pr-hint{font-size:11.5px;color:var(--text-muted)}
         .pn-side{position:sticky;top:92px;display:grid;gap:16px;max-height:calc(100vh - 110px);overflow:auto}
         .pn-card{padding:16px;border-radius:18px;background:linear-gradient(180deg,#0d1a36,#0a1630);border:1px solid var(--border-glow)}
@@ -112,14 +117,17 @@
   <div>
     <h1>Panel de ajustes</h1>
     <p class="pn-help">Aquí eliges qué productos destacar, cambias precios, nombres o imágenes y ocultas lo que no quieras mostrar. <b>Nada se guarda solo:</b> al final te genera un texto (columna derecha) que pegas en <code>ajustes.js</code> en GitHub.</p>
-    <div class="pn-steps"><span><b>1</b> Busca el producto</span><span><b>2</b> Haz clic en ★ / Editar / Ocultar</span><span><b>3</b> Copia el texto de la derecha</span><span><b>4</b> Pégalo en <code>ajustes.js</code> en GitHub</span></div>
+    <div class="pn-steps"><span><b>1</b> Busca el producto</span><span><b>2</b> Haz clic en ★ / Editar / Quitar, o ➕ Agregar producto</span><span><b>3</b> Copia el texto de la derecha</span><span><b>4</b> Pégalo en <code>ajustes.js</code> en GitHub</span></div>
     <div class="pn-bar">
         <input type="search" id="q" placeholder="Buscar por nombre, marca o número (ID)…">
         <select id="cat"><option value="">Todas las categorías</option></select>
         <label><input type="checkbox" id="fDest"> Solo destacados</label>
         <label><input type="checkbox" id="fMod"> Solo con cambios</label>
+          <label><input type="checkbox" id="fNew"> Solo agregados por mí</label>
+          <button class="pn-btn primary" id="btnAdd" type="button">➕ Agregar producto</button>
     </div>
-    <div id="plist"></div>
+    <div id="addBox" class="pn-card" hidden></div>
+      <div id="plist"></div>
     <div style="text-align:center"><button class="pn-btn" id="more">Ver más productos</button></div>
   </div>
   <aside class="pn-side">
@@ -170,7 +178,8 @@ const S = {
     bprod: has('AJ_BANNER_PRODUCTOS') && AJ_BANNER_PRODUCTOS ? Object.assign({}, AJ_BANNER_PRODUCTOS) : {},
     ga: has('AJ_ANALITICA') && AJ_ANALITICA ? AJ_ANALITICA : '',
     cf: has('AJ_CLOUDFLARE') && AJ_CLOUDFLARE ? AJ_CLOUDFLARE : '',
-    colores: has('AJ_COLORES') && AJ_COLORES ? JSON.parse(JSON.stringify(AJ_COLORES)) : {}
+    colores: has('AJ_COLORES') && AJ_COLORES ? JSON.parse(JSON.stringify(AJ_COLORES)) : {},
+      nuevos: has('AJ_NUEVOS') && Array.isArray(AJ_NUEVOS) ? JSON.parse(JSON.stringify(AJ_NUEVOS)) : []
 };
 Object.values(S.colores).forEach(c => { if (c.imagenes) c.imagenes = legacyKeys(c.imagenes); if (c.ocultos) c.ocultos = c.ocultos.map(z => LEGACY_COLORS[z] || z); if (c.defecto) c.defecto = LEGACY_COLORS[c.defecto] || c.defecto; });
 Object.values(S.precios).forEach(c => Object.values(c.opciones || {}).forEach(x => { if (x && typeof x === 'object' && x.colores) x.colores = legacyKeys(x.colores); }));
@@ -178,7 +187,7 @@ const $ = id => document.getElementById(id);
 let shownN = 30, openId = null;
 const num = v => { const n = parseInt(String(v).replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; };
 const catSel = $('cat'); CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; catSel.appendChild(o); });
-const modified = id => !!(S.precios[id] || S.nombres[id] || S.imagenes[id] || S.colores[id] || S.ocultos.has(id));
+const modified = id => !!(S.precios[id] || S.nombres[id] || S.imagenes[id] || S.colores[id] || S.nuevos.some(n => n.id === id) || S.ocultos.has(id));
 function effPrice(p){
     const c = S.precios[p.id] || {};
     if (hasOpts(p)) return { price: p.price, old: p.oldPrice };
@@ -190,15 +199,15 @@ function rowHTML(p){
     return `<div class="pr${isD ? ' is-dest' : ''}${hid ? ' is-hidden' : ''}" data-id="${p.id}">
       <img class="pr-img" src="${esc(S.imagenes[p.id] ? (/^(https?:|img\/)/.test(S.imagenes[p.id]) ? S.imagenes[p.id] : 'img/' + S.imagenes[p.id]) : p.image)}" alt=""${imgAttr(p)}>
       <div class="pr-main">
-        <div class="pr-top"><b>#${p.id}</b> · ${esc(p.brand || '—')} · ${esc((CATEGORIES.find(c => c.id === p.category) || {}).name || '')}${hid ? ' · <b style="color:#ffb347">OCULTO</b>' : ''}</div>
+        <div class="pr-top"><b>#${p.id}</b> · ${esc(p.brand || '—')} · ${esc((CATEGORIES.find(c => c.id === p.category) || {}).name || '')}${hid ? ' · <b style="color:#ffb347">OCULTO</b>' : ''}${p.manual ? ' · <b style="color:#34d399">AGREGADO POR TI</b>' : ''}</div>
         <div class="pr-title">${esc(S.nombres[p.id] || p.title)}</div>
         <div class="pr-price">${p.price ? (hasOpts(p) ? 'Desde ' : '') + fmt(e.price) : 'Consultar'}${e.old ? `<s>${fmt(e.old)}</s>` : ''}${pct ? `<span class="pr-badge">-${pct}%</span>` : ''}</div>
         <div class="pr-actions">
           <button data-a="dest" class="${isD ? 'on' : ''}">${isD ? '★ Destacado (#' + idx + ')' : '☆ Destacar'}</button>
-          <button data-a="edit">✎ Editar precio / nombre / imagen</button>
-          <button data-a="hide" class="${hid ? 'on' : ''}">${hid ? 'Mostrar de nuevo' : 'Ocultar'}</button>
+          <button data-a="edit">${p.manual ? '✎ Editar producto' : '✎ Editar precio / nombre / imagen'}</button>
+          ${p.manual ? '<button data-a="del">🗑 Quitar</button>' : `<button data-a="hide" class="${hid ? 'on' : ''}">${hid ? 'Mostrar de nuevo' : 'Quitar de la tienda'}</button>`}
         </div>
-        <div class="pr-edit" ${openId === p.id ? '' : 'hidden'}>${editHTML(p)}</div>
+        <div class="pr-edit" ${openId === p.id && !p.manual ? '' : 'hidden'}>${p.manual ? '' : editHTML(p)}</div>
       </div></div>`;
 }
 function editHTML(p){
@@ -225,7 +234,7 @@ function editHTML(p){
 }
 function list(){
     const q = $('q').value.trim().toLowerCase(), cat = $('cat').value;
-    return ALL_PRODUCTS.filter(p => (!cat || p.category === cat) && (!$('fDest').checked || S.dest.includes(p.id)) && (!$('fMod').checked || modified(p.id)) &&
+    return ALL_PRODUCTS.filter(p => (!cat || p.category === cat) && (!$('fDest').checked || S.dest.includes(p.id)) && (!$('fMod').checked || modified(p.id)) && (!$('fNew').checked || p.manual) &&
         (!q || String(p.id) === q || (p.title + ' ' + (p.brand || '')).toLowerCase().includes(q)));
 }
 function render(){
@@ -238,7 +247,7 @@ function side(){
     $('dlist').innerHTML = S.dest.map((id, i) => { const p = getP(id) || ALL_PRODUCTS.find(x => x.id === id); return `<div class="dl-i" data-id="${id}"><b>${i + 1}</b><span title="${esc(p ? p.title : id)}">${esc(S.nombres[id] || (p ? p.title : 'ID ' + id))}</span><button data-a="up" title="Subir">▲</button><button data-a="down" title="Bajar">▼</button><button data-a="rm" title="Quitar">✕</button></div>`; }).join('') || '<span class="pr-hint">Aún no hay destacados.</span>';
     $('dwarn').textContent = S.dest.length < 4 ? 'Pon al menos 4 productos destacados.' : S.dest.length > 12 ? 'Se mostrarán solo 12 en la portada.' : '';
     const np = Object.keys(S.precios).length;
-    $('sum').innerHTML = `Precios modificados: <b>${np}</b> · Ocultos: <b>${S.ocultos.size}</b> · Nombres: <b>${Object.keys(S.nombres).length}</b> · Imágenes: <b>${Object.keys(S.imagenes).length}</b>`;
+    $('sum').innerHTML = `Precios modificados: <b>${np}</b> · Ocultos: <b>${S.ocultos.size}</b> · Nombres: <b>${Object.keys(S.nombres).length}</b> · Imágenes: <b>${Object.keys(S.imagenes).length}</b> · Nuevos: <b>${S.nuevos.length}</b>`;
 }
 const J = JSON.stringify;
 function out(){
@@ -260,14 +269,60 @@ function out(){
     L.push('/* 8) PRODUCTO DE CADA DIAPOSITIVA del banner (opcional): categoría: ID. */', 'const AJ_BANNER_PRODUCTOS = {', ...Object.entries(S.bprod).filter(([k, v]) => v).map(([k, v]) => `  ${k}: ${v},`), '};', '');
     L.push('/* 9) ESTADÍSTICAS DE VISITAS (opcional). ID de Google Analytics (empieza por G-) y/o token de Cloudflare Web Analytics. Vacío = sin estadísticas. */', `const AJ_ANALITICA = ${J(S.ga || '')};`, `const AJ_CLOUDFLARE = ${J(S.cf || '')};`, '');
     L.push('/* 10) COLORES: foto de cada color, colores ocultos y color que se muestra primero. */', 'const AJ_COLORES = {', ...Object.entries(S.colores).map(([id, cc]) => { const q = []; if (cc.defecto) q.push('defecto: ' + J(cc.defecto)); if (cc.imagenes && Object.keys(cc.imagenes).length) q.push('imagenes: { ' + Object.entries(cc.imagenes).map(([a, b]) => J(a) + ': ' + J(b)).join(', ') + ' }'); if (cc.ocultos && cc.ocultos.length) q.push('ocultos: [' + cc.ocultos.map(z => J(z)).join(', ') + ']'); return q.length ? `  ${id}: { ${q.join(', ')} },` : ''; }).filter(Boolean), '};', '');
+    L.push('/* 11) PRODUCTOS NUEVOS que agregaste a mano (se muestran primero en su categoría). */', 'const AJ_NUEVOS = [', ...S.nuevos.map(n => '  ' + J(n) + ','), '];', '');
     $('out').value = L.join('\n');
 }
 // eventos
+// ---- productos agregados a mano ----
+const nextId = () => Math.max(10000, ...S.nuevos.map(n => +n.id || 0)) + 1;
+function liveSet(n){ const p = makeNuevo(n); [ALL_PRODUCTS, products].forEach((a, k) => { const i = a.findIndex(x => x.id === n.id); if (i >= 0) a[i] = p; else if (k === 0 || !S.ocultos.has(n.id)) a.unshift(p); }); }
+function quitarNuevo(id){
+    const p = ALL_PRODUCTS.find(x => x.id === id); if (!confirm('¿Quitar para siempre "' + (p ? p.title : id) + '"? Se borra de la lista que generas (no afecta tus otros productos).')) return;
+    S.nuevos = S.nuevos.filter(n => n.id !== id); [ALL_PRODUCTS, products].forEach(a => { const i = a.findIndex(x => x.id === id); if (i >= 0) a.splice(i, 1); });
+    S.dest = S.dest.filter(x => x !== id); delete S.precios[id]; delete S.nombres[id]; delete S.imagenes[id]; delete S.colores[id]; S.ocultos.delete(id);
+}
+function openForm(p){
+    const n = p ? S.nuevos.find(x => x.id === p.id) : null, box = $('addBox'); box.hidden = false; box.dataset.id = n ? n.id : '';
+    const ops = n && n.opciones ? n.opciones.map(o => o.etiqueta + (o.precio ? ' | ' + o.precio : '')).join('\n') : '';
+    box.innerHTML = `<h3>${n ? 'Editar producto #' + n.id : 'Agregar producto nuevo'}</h3>
+      <div class="nv-grid">
+        <label class="nv-full">Nombre del producto *<input id="nvTitulo" value="${esc(n ? n.titulo : '')}" placeholder="Ej. Audífonos Bluetooth Xiaomi Buds 5"></label>
+        <label>Marca<input id="nvMarca" value="${esc(n ? n.marca || '' : '')}" placeholder="Ej. Xiaomi"></label>
+        <label>Categoría *<select id="nvCat">${CATEGORIES.map(c => `<option value="${c.id}" ${(n ? n.categoria : 'audio') === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>
+        <label>Precio (COP) <small>vacío = "Consultar precio"</small><input id="nvPrecio" inputmode="numeric" value="${n && n.precio ? n.precio : ''}" placeholder="Ej. 150000"></label>
+        <label>Precio antes (tachado) <small>opcional</small><input id="nvAntes" inputmode="numeric" value="${n && n.antes ? n.antes : ''}" placeholder="Ej. 199000"></label>
+        <label class="nv-full">Foto <small>nombre del archivo que subiste a la carpeta img (ej. mi-foto.jpg) o un enlace https. Vacío = busca ${n ? n.id : 'NÚMERO'}.webp</small><input id="nvImg" value="${esc(n ? n.imagen || '' : '')}"></label>
+        <label class="nv-full">Descripción corta<textarea id="nvDesc" placeholder="Qué es y por qué comprarlo">${esc(n ? n.descripcion || '' : '')}</textarea></label>
+        <label class="nv-full">Características <small>una por línea</small><textarea id="nvCar" placeholder="Batería de 30 horas&#10;Cancelación de ruido">${esc(n && n.caracteristicas ? n.caracteristicas.join('\n') : '')}</textarea></label>
+        <label class="nv-full">Variantes <small>opcional, una por línea: Nombre | precio  (ej. Negro | 150000). Sin precio usa el principal</small><textarea id="nvOps" placeholder="Negro | 150000&#10;Blanco | 160000">${esc(ops)}</textarea></label>
+      </div>
+      <div class="nv-msg" id="nvMsg"></div>
+      <div class="nv-actions"><button class="pn-btn primary" id="nvSave">${n ? 'Guardar cambios' : 'Agregar producto'}</button><button class="pn-btn" id="nvCancel">Cancelar</button></div>`;
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+$('btnAdd').addEventListener('click', () => openForm(null));
+$('addBox').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'nvCancel') { $('addBox').hidden = true; return; }
+    if (b.id !== 'nvSave') return;
+    const g = id => $(id).value.trim(), msg = t => { $('nvMsg').textContent = t; };
+    const titulo = g('nvTitulo'); if (titulo.length < 3) return msg('Escribe el nombre del producto.');
+    const num = v => +String(v).replace(/[^\d]/g, '') || 0, precio = num(g('nvPrecio')), antes = num(g('nvAntes'));
+    if (antes && precio && antes <= precio) return msg('El precio "antes" debe ser mayor que el precio actual (o déjalo vacío).');
+    const opciones = g('nvOps').split('\n').map(l => l.trim()).filter(Boolean).map(l => { const [a, b2] = l.split('|'); return { etiqueta: (a || '').trim(), precio: num(b2 || '') }; }).filter(o => o.etiqueta);
+    const idEd = +$('addBox').dataset.id || 0, n = { id: idEd || nextId(), titulo, marca: g('nvMarca'), categoria: g('nvCat') };
+    if (precio) n.precio = precio; if (antes) n.antes = antes; if (g('nvImg')) n.imagen = g('nvImg'); if (g('nvDesc')) n.descripcion = g('nvDesc');
+    const car = g('nvCar').split('\n').map(l => l.trim()).filter(Boolean); if (car.length) n.caracteristicas = car; if (opciones.length) n.opciones = opciones;
+    const i = S.nuevos.findIndex(x => x.id === n.id); if (i >= 0) S.nuevos[i] = n; else S.nuevos.push(n);
+    liveSet(n); $('addBox').hidden = true; $('fNew').checked = true; $('q').value = ''; $('cat').value = ''; shownN = Math.max(shownN, 20); render();
+    const row = document.querySelector('.pr[data-id="' + n.id + '"]'); if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
 $('plist').addEventListener('click', e => {
     const b = e.target.closest('button[data-a]'); if (!b) return; const id = +b.closest('.pr').dataset.id, a = b.dataset.a;
     if (a === 'dest') { const i = S.dest.indexOf(id); if (i >= 0) S.dest.splice(i, 1); else S.dest.push(id); }
     else if (a === 'hide') { S.ocultos.has(id) ? S.ocultos.delete(id) : S.ocultos.add(id); }
-    else if (a === 'edit') { openId = openId === id ? null : id; }
+    else if (a === 'edit') { const pp = ALL_PRODUCTS.find(x => x.id === id); if (pp && pp.manual) { openForm(pp); return; } openId = openId === id ? null : id; }
+    else if (a === 'del') { quitarNuevo(id); }
     render();
 });
 $('plist').addEventListener('change', e => {
@@ -302,7 +357,7 @@ $('dlist').addEventListener('click', e => {
     if (a === 'rm') S.dest.splice(i, 1); else if (a === 'up' && i > 0) [S.dest[i - 1], S.dest[i]] = [S.dest[i], S.dest[i - 1]]; else if (a === 'down' && i < S.dest.length - 1) [S.dest[i + 1], S.dest[i]] = [S.dest[i], S.dest[i + 1]];
     render();
 });
-['q', 'cat', 'fDest', 'fMod'].forEach(id => $(id).addEventListener(id === 'q' ? 'input' : 'change', () => { shownN = 30; render(); }));
+['q', 'cat', 'fDest', 'fMod', 'fNew'].forEach(id => $(id).addEventListener(id === 'q' ? 'input' : 'change', () => { shownN = 30; render(); }));
 $('more').onclick = () => { shownN += 30; render(); };
 $('copy').onclick = async () => {
     const t = $('out'); t.select();
