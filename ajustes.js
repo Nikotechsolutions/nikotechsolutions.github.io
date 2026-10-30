@@ -1,7 +1,7 @@
 /* AJUSTES DE TU TIENDA — generado con panel.html. Puedes seguir usando el panel para cambiarlo. */
 
 /* 1) PRODUCTOS DESTACADOS de la portada, en orden (ID separados por coma). Entre 4 y 12. */
-const AJ_DESTACADOS = [769, 10001, 18, 26, 30, 85, 207, 211, 221];
+const AJ_DESTACADOS = [769, 10001, 30, 85, 211, 221];
 
 /* 2) CAMBIOS DE PRECIO (precio, antes = precio tachado, antes: 0 quita el tachado). */
 const AJ_PRECIOS = {
