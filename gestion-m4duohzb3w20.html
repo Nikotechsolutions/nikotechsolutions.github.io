@@ -55,6 +55,7 @@
         .pn-pw{display:grid;gap:8px;margin-bottom:8px}.pn-pw input{padding:10px 12px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%}
         .bn-l{display:grid;gap:6px;font-size:13px;color:var(--text-muted)}.bn-l select,.bn-grid input{padding:9px 10px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%}
         .bn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bn-grid label{display:grid;gap:3px;font-size:12px;color:var(--text-muted)}
+        .bn-l input{padding:9px 10px;border-radius:10px;border:1px solid var(--border-glow);background:#081327;color:#fff;font-size:14px;width:100%}
         .pn-ok{color:var(--accent-green);font-size:13px;margin-top:6px;min-height:18px}
         .pn-steps2{color:var(--text-muted);font-size:13px;line-height:1.7;padding-left:18px}.pn-steps2 b{color:#fff}
         @media(max-width:1000px){.pn{grid-template-columns:1fr}.pn-side{position:static;max-height:none}.pr-row2{grid-template-columns:1fr}}
@@ -134,6 +135,12 @@
         <div class="pr-hint" id="bnNames"></div>
     </div>
     <div class="pn-card">
+        <h3><i class="fa-solid fa-chart-line" style="color:var(--accent-cyan)"></i> Estadísticas de visitas (opcional)</h3>
+        <label class="bn-l">Google Analytics: ID de medición (empieza por G-)<input id="anGA" placeholder="G-XXXXXXXXXX" autocomplete="off" spellcheck="false"></label>
+        <label class="bn-l" style="margin-top:8px">Cloudflare Web Analytics: token<input id="anCF" placeholder="pega aquí el token" autocomplete="off" spellcheck="false"></label>
+        <p class="pr-hint" id="anMsg" style="margin-top:8px">Vacío = sin estadísticas. Google Analytics muestra un aviso de cookies a los visitantes; Cloudflare no usa cookies.</p>
+    </div>
+    <div class="pn-card">
         <h3>Texto para <code>ajustes.js</code></h3>
         <textarea id="out" readonly spellcheck="false"></textarea>
         <div class="pn-btns"><button class="pn-btn primary" id="copy"><i class="fa-regular fa-copy"></i> Copiar texto</button>
@@ -154,7 +161,9 @@ const S = {
     imagenes: has('AJ_IMAGENES') ? Object.assign({}, AJ_IMAGENES) : {},
     clave: has('AJ_PANEL_CLAVE') ? AJ_PANEL_CLAVE : '',
     banner: has('AJ_BANNER') && AJ_BANNER ? AJ_BANNER : 'escenario',
-    bprod: has('AJ_BANNER_PRODUCTOS') && AJ_BANNER_PRODUCTOS ? Object.assign({}, AJ_BANNER_PRODUCTOS) : {}
+    bprod: has('AJ_BANNER_PRODUCTOS') && AJ_BANNER_PRODUCTOS ? Object.assign({}, AJ_BANNER_PRODUCTOS) : {},
+    ga: has('AJ_ANALITICA') && AJ_ANALITICA ? AJ_ANALITICA : '',
+    cf: has('AJ_CLOUDFLARE') && AJ_CLOUDFLARE ? AJ_CLOUDFLARE : ''
 };
 const $ = id => document.getElementById(id);
 let shownN = 30, openId = null;
@@ -232,6 +241,7 @@ function out(){
     L.push('/* 6) CONTRASEÑA DEL PANEL EN LÍNEA. No la escribas aquí: se crea desde el panel (aquí solo se guarda su huella). */', `const AJ_PANEL_CLAVE = ${J(S.clave || '')};`, '');
     L.push('/* 7) ESTILO DEL BANNER de la portada: "escenario" (nuevo) o "clasico" (anterior). */', `const AJ_BANNER = ${J(S.banner || 'escenario')};`, '');
     L.push('/* 8) PRODUCTO DE CADA DIAPOSITIVA del banner (opcional): categoría: ID. */', 'const AJ_BANNER_PRODUCTOS = {', ...Object.entries(S.bprod).filter(([k, v]) => v).map(([k, v]) => `  ${k}: ${v},`), '};', '');
+    L.push('/* 9) ESTADÍSTICAS DE VISITAS (opcional). ID de Google Analytics (empieza por G-) y/o token de Cloudflare Web Analytics. Vacío = sin estadísticas. */', `const AJ_ANALITICA = ${J(S.ga || '')};`, `const AJ_CLOUDFLARE = ${J(S.cf || '')};`, '');
     $('out').value = L.join('\n');
 }
 // eventos
@@ -296,6 +306,17 @@ if ($('bnStyle')) {
     $('bnStyle').onchange = () => { S.banner = $('bnStyle').value; out(); };
     $('bnGrid').addEventListener('change', e => { const k = e.target.dataset.bp; if (!k) return; const n = num(e.target.value); if (n) S.bprod[k] = n; else delete S.bprod[k]; names(); out(); });
     names();
+}
+if ($('anGA')) {
+    $('anGA').value = S.ga; $('anCF').value = S.cf;
+    const chk = () => {
+        const g = $('anGA').value.trim(), c = $('anCF').value.trim(), m = $('anMsg'); let t = '', bad = false;
+        if (g && !/^G-[A-Z0-9]{6,14}$/i.test(g)) { t = 'El ID de Google Analytics debe empezar por G- (ej. G-AB12CD34EF).'; bad = true; }
+        if (c && !/^[a-z0-9]{20,64}$/i.test(c)) { t += (t ? ' ' : '') + 'El token de Cloudflare debe tener solo letras y números (20 a 64 caracteres).'; bad = true; }
+        m.style.color = bad ? '#ffb347' : ''; m.textContent = bad ? t : 'Vacío = sin estadísticas. Google Analytics muestra un aviso de cookies a los visitantes; Cloudflare no usa cookies.';
+        S.ga = g; S.cf = c; out();
+    };
+    $('anGA').addEventListener('change', chk); $('anCF').addEventListener('change', chk);
 }
 document.addEventListener('DOMContentLoaded', render);
 if (document.readyState !== 'loading') render();

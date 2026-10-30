@@ -38,6 +38,7 @@ function addToCart(id, opt, qty){
     const ex = cart.find(i => i.id === id && i.opt === opt);
     if (ex) ex.qty += qty; else cart.push({ id, opt, qty });
     saveCart(); updateCartUI(); toggleCart(true); bumpCart();
+    track('add_to_cart', { currency: 'COP', value: unitPrice({ id, opt }) * qty, items: [gaItem(p, opt, qty)] });
 }
 function changeQty(index, d){
     if (!cart[index]) return;
@@ -80,6 +81,7 @@ function checkoutWhatsApp(){
         const p = getP(item.id), u = unitPrice(item), sub = u * item.qty; total += sub;
         msg += `${i + 1}. ${p.title}${item.opt ? ' (' + item.opt + ')' : ''}\n    ${item.qty} x ${fmt(u)} = ${fmt(sub)}\n`;
     });
+    track('begin_checkout', { currency: 'COP', value: total, items: cart.map(i => gaItem(getP(i.id), i.opt, i.qty)) }); track('pedido_whatsapp', { value: total, productos: cart.length });
     msg += `\n*Total: ${fmt(total)}*\n\nQuedo atento(a) para coordinar pago y envío. ¡Gracias!`;
     window.open(waLink(msg), '_blank');
 }
@@ -191,6 +193,7 @@ function filterProducts(gridId){
         return;
     }
     applySorting(gridId || 'productsGrid');
+    clearTimeout(window._tsq); if (state.q.length > 2) window._tsq = setTimeout(() => track('search', { search_term: state.q }), 1000);
 }
 function buildFilters(){ /* compatibilidad: el catálogo usa ahora el panel lateral */ }
 function clearFilters(){
@@ -418,6 +421,7 @@ function renderProductPage(){
       </div>
       <section class="categories container"><h2 class="section-title">También te puede interesar</h2><div class="products-grid" id="relatedGrid"></div></section>`;
     if (hasOpts(p)) onOptChange(p.id);
+    track('view_item', { currency: 'COP', value: p.price || 0, items: [gaItem(p, '', 1)] });
     const rel = products.filter(x => x.category === p.category && x.id !== p.id).sort(() => Math.random() - .5).slice(0, 4);
     document.getElementById('relatedGrid').innerHTML = rel.map(cardHTML).join(''); observeReveal();
 }
@@ -476,6 +480,39 @@ function toggleSearch(){
     b.classList.toggle('active'); if (b.classList.contains('active')) document.getElementById('searchInput').focus();
 }
 
+/* ---------- ESTADÍSTICAS DE VISITAS (opcional: se activan desde ajustes.js / panel) ---------- */
+function track(name, params){ try { if (window._gaOn && window.gtag) window.gtag('event', name, params || {}); } catch (e) {} }
+function gaItem(p, opt, qty){ return { item_id: String(p.id), item_name: p.title, item_brand: p.brand || '', item_category: catName(p.category), item_variant: opt || '', price: p.price || 0, quantity: qty || 1 }; }
+function cookieBanner(done){
+    const d = document.createElement('div'); d.className = 'ck-banner'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Cookies de estadística');
+    d.innerHTML = '<p><b>Cookies de estadística</b><br>Usamos Google Analytics para saber cuántas personas visitan la tienda y mejorarla. ¿Aceptas?</p><div><button class="ck-no">No, gracias</button><button class="ck-yes">Aceptar</button></div>';
+    d.querySelector('.ck-yes').onclick = () => { done(true); d.remove(); };
+    d.querySelector('.ck-no').onclick = () => { done(false); d.remove(); };
+    document.body.appendChild(d);
+}
+function initAnalytics(){
+    const gid = (typeof AJ_ANALITICA !== 'undefined' && AJ_ANALITICA) ? String(AJ_ANALITICA).trim() : '';
+    const cf = (typeof AJ_CLOUDFLARE !== 'undefined' && AJ_CLOUDFLARE) ? String(AJ_CLOUDFLARE).trim() : '';
+    if (cf && /^[a-z0-9]{20,64}$/i.test(cf) && !document.getElementById('cfBeacon')) {   // Cloudflare: sin cookies, sin aviso
+        const s = document.createElement('script'); s.defer = true; s.id = 'cfBeacon'; s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+        s.setAttribute('data-cf-beacon', JSON.stringify({ token: cf })); document.head.appendChild(s);
+    }
+    if (gid && /^G-[A-Z0-9]{6,14}$/i.test(gid)) {                                          // Google Analytics: solo con aceptación
+        const load = () => {
+            if (window._gaOn) return; window._gaOn = true; window.dataLayer = window.dataLayer || [];
+            window.gtag = function () { window.dataLayer.push(arguments); };
+            const s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gid); document.head.appendChild(s);
+            window.gtag('js', new Date()); window.gtag('config', gid, { anonymize_ip: true });
+        };
+        let c = null; try { c = localStorage.getItem('nikotech_cookies'); } catch (e) {}
+        if (c === 'si') load(); else if (c !== 'no') cookieBanner(ok => { try { localStorage.setItem('nikotech_cookies', ok ? 'si' : 'no'); } catch (e) {} if (ok) load(); });
+    }
+    document.addEventListener('click', e => {                                              // clics a WhatsApp
+        const a = e.target.closest && e.target.closest('a[href*="wa.me"]');
+        if (a) track('click_whatsapp', { link_text: (a.textContent || '').trim().slice(0, 40), page_path: location.pathname });
+    }, true);
+}
+
 /* ---------- AJUSTES DEL DUEÑO (archivo ajustes.js / panel.html) ---------- */
 function applyAjustes(){
     const has = n => { try { return typeof eval(n) !== 'undefined'; } catch (e) { return false; } };
@@ -513,6 +550,7 @@ function applyAjustes(){
 /* ---------- INICIALIZACIÓN ---------- */
 document.addEventListener('DOMContentLoaded', () => {
     try { applyAjustes(); } catch (e) { console.error('ajustes.js:', e); }
+    try { initAnalytics(); } catch (e) { console.error('estadísticas:', e); }
     updateCartUI();
     const params = new URLSearchParams(location.search);
     if (params.get('cat') && CATEGORIES.some(c => c.id === params.get('cat'))) state.cat = params.get('cat');
