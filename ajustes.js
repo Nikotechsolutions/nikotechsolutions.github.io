@@ -27,6 +27,8 @@ const AJ_BANNER = "escenario";
 
 /* 8) PRODUCTO DE CADA DIAPOSITIVA del banner (opcional): categoría: ID. */
 const AJ_BANNER_PRODUCTOS = {
+  portatiles: 343,
+  televisores: 318,
 };
 
 /* 9) ESTADÍSTICAS DE VISITAS (opcional). ID de Google Analytics (empieza por G-) y/o token de Cloudflare Web Analytics. Vacío = sin estadísticas. */
