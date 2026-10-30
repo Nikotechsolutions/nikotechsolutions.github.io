@@ -172,6 +172,8 @@ const S = {
     cf: has('AJ_CLOUDFLARE') && AJ_CLOUDFLARE ? AJ_CLOUDFLARE : '',
     colores: has('AJ_COLORES') && AJ_COLORES ? JSON.parse(JSON.stringify(AJ_COLORES)) : {}
 };
+Object.values(S.colores).forEach(c => { if (c.imagenes) c.imagenes = legacyKeys(c.imagenes); if (c.ocultos) c.ocultos = c.ocultos.map(z => LEGACY_COLORS[z] || z); if (c.defecto) c.defecto = LEGACY_COLORS[c.defecto] || c.defecto; });
+Object.values(S.precios).forEach(c => Object.values(c.opciones || {}).forEach(x => { if (x && typeof x === 'object' && x.colores) x.colores = legacyKeys(x.colores); }));
 const $ = id => document.getElementById(id);
 let shownN = 30, openId = null;
 const num = v => { const n = parseInt(String(v).replace(/[^\d]/g, ''), 10); return isNaN(n) ? null : n; };
