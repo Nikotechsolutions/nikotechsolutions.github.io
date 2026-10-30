@@ -9,7 +9,7 @@ const AJ_PRECIOS = {
 };
 
 /* 3) PRODUCTOS OCULTOS (ID separados por coma). */
-const AJ_OCULTOS = [];
+const AJ_OCULTOS = [58, 65, 66, 268, 269, 260, 285];
 
 /* 4) NOMBRES CAMBIADOS. */
 const AJ_NOMBRES = {
@@ -39,3 +39,7 @@ const AJ_CLOUDFLARE = "";
 const AJ_COLORES = {
   767: { imagenes: { "Borgoña": "18PROMAXBORGONA.webp", "Negro": "iphone18promaxnegro.webp" } },
 };
+
+/* 11) PRODUCTOS NUEVOS que agregaste a mano (se muestran primero en su categoría). */
+const AJ_NUEVOS = [
+];
