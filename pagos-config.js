@@ -7,6 +7,8 @@
    ===================================================================== */
 
 const AJ_PAGOS = {
+
+   epayco: { activo: true, llavePublica: "dca515355a2111fa7333b0efd1ae09d7", pruebas: true },
   /* true  = el carrito lleva a la página "Finalizar compra".
      false = el pedido sale directo por WhatsApp (como antes). */
   checkout: true,
