@@ -549,9 +549,9 @@ function toggleSearch(){
 
 /* ---------- PAGOS, ENVÍOS Y FINALIZAR COMPRA (se configura en pagos-config.js) ---------- */
 function payCfg(){
-    const d = { checkout: true, pedidosEndpoint: '', transferencia: { activo: true, titular: '', bancos: [], nequi: '', llave: '' }, wompi: { activo: false, endpoint: '' }, addi: { activo: false, endpoint: '' } };
+    const d = { checkout: true, api: '', maximoTarjeta: 0, pedidosEndpoint: '', linkPago: { activo: false, nombre: '' }, epayco: { activo: false, llavePublica: '', pruebas: true }, transferencia: { activo: true, titular: '', bancos: [], nequi: '', llave: '' } };
     const u = (typeof AJ_PAGOS !== 'undefined' && AJ_PAGOS) ? AJ_PAGOS : {};
-    return Object.assign({}, d, u, { transferencia: Object.assign({}, d.transferencia, u.transferencia || {}), wompi: Object.assign({}, d.wompi, u.wompi || {}), addi: Object.assign({}, d.addi, u.addi || {}) });
+    return Object.assign({}, d, u, { transferencia: Object.assign({}, d.transferencia, u.transferencia || {}), linkPago: Object.assign({}, d.linkPago, u.linkPago || {}), epayco: Object.assign({}, d.epayco, u.epayco || {}) });
 }
 function shipCfg(){
     const d = { gratis: ['bogota'], tarifas: { pequeno: 0, mediano: 0, grande: 0 }, tamanos: { celulares: 'pequeno', audio: 'pequeno', smartwatch: 'pequeno', cargadores: 'pequeno', fundas: 'pequeno', accesorios: 'pequeno', computacion: 'pequeno', estilo: 'pequeno', hogar: 'pequeno', redes: 'pequeno', almacenamiento: 'pequeno', perifericos: 'mediano', tablets: 'mediano', portatiles: 'mediano', impresion: 'grande', monitores: 'grande', televisores: 'grande', computadores: 'grande', energia: 'grande' }, recargos: {}, seguroPct: 0 };
@@ -582,35 +582,62 @@ function orderLines(o){ return o.items.map((i, k) => `${k + 1}. ${i.title}${i.va
 function orderMsg(o, intro){
     return `¡Hola ${STORE_NAME}! ${intro}\n\n*Pedido ${o.ref}*\n${orderLines(o)}\n\nSubtotal: ${fmt(o.subtotal)}\nEnvío: ${o.envio === null ? 'por confirmar' : (o.envio ? fmt(o.envio) : 'gratis')}\n*Total: ${o.envio === null ? fmt(o.subtotal) + ' + envío por confirmar' : fmt(o.total)}*\n\nCliente: ${o.cliente.nombre} · ${o.cliente.tel}\n${o.cliente.email}\nEntrega: ${o.entrega.direccion}, ${o.entrega.ciudad}`;
 }
-function renderCheckout(){
+const CITIES = ['Bogotá D.C.', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga', 'Cúcuta', 'Pereira', 'Manizales', 'Armenia', 'Ibagué', 'Villavicencio', 'Santa Marta', 'Neiva', 'Pasto', 'Popayán', 'Tunja', 'Montería', 'Valledupar', 'Sincelejo', 'Soacha', 'Chía', 'Bello', 'Envigado', 'Itagüí', 'Palmira', 'Floridablanca'];
+const PAY_ERR = {
+    addi_documento: 'Para pagar con Addi escribe tu número de documento (cédula).',
+    addi_monto: e => `Addi aplica para compras de ${fmt(e.min || 50000)} a ${fmt(e.max || 3000000)}. Elige otro método de pago.`,
+    bold_monto: 'El valor de tu compra supera el límite de Bold. Elige Wompi o transferencia.',
+    envio_por_confirmar: 'Aún no tenemos el valor del envío a tu ciudad. Elige transferencia (te lo confirmamos antes de pagar) o escríbenos por WhatsApp.',
+    producto_no_disponible: 'Uno de los productos de tu carrito ya no está disponible. Revisa tu carrito.',
+    falta_opcion: 'Falta elegir una opción (versión, color…) en un producto del carrito.',
+    producto_sin_precio: 'Uno de los productos se vende por cotización. Escríbenos por WhatsApp.',
+    metodo_no_disponible: 'Ese método de pago no está disponible por ahora. Elige otro.',
+    datos_invalidos: 'Revisa tus datos de contacto y de entrega.',
+    epayco_auth: 'ePayco no está disponible en este momento. Elige otro método.', epayco_error: 'ePayco no respondió. Elige otro método o intenta más tarde.',
+    addi_auth: 'Addi no está disponible en este momento. Elige otro método.', addi_error: 'Addi no respondió. Elige otro método o intenta más tarde.', bold_error: 'Bold no respondió. Elige otro método o intenta más tarde.'
+};
+async function renderCheckout(){
     const root = document.getElementById('checkoutRoot'); if (!root) return;
-    const cfg = payCfg(), $ = id => document.getElementById(id), params = new URLSearchParams(location.search);
+    const cfg = payCfg(), $ = id => document.getElementById(id), params = new URLSearchParams(location.search), api = String(cfg.api || '').replace(/\/+$/, '');
     let orders = []; try { orders = JSON.parse(localStorage.getItem('nikotech_orders') || '[]'); } catch (e) {}
-    if (params.get('pedido')) { const o = orders.find(x => x.ref === params.get('pedido')); if (o) return showDone(o, root, cfg); }
+    const save = () => { try { localStorage.setItem('nikotech_orders', JSON.stringify(orders.slice(-20))); } catch (e) {} };
+    const wid = params.get('id'), pref = params.get('pedido');
+    if (api && (wid || pref)) return resultadoPago(root, cfg, api, orders, save, wid, pref, params.get('ref_payco'));
+    if (pref) { const o = orders.find(x => x.ref === pref); if (o) return o.metodo === 'epaycoweb' ? epaycoRetorno(root, cfg, o, params.get('ref_payco')) : showDone(o, root, cfg); }
     if (!cart.length) { root.innerHTML = '<div class="co-empty"><i class="fa-solid fa-cart-shopping"></i><h2>Tu carrito está vacío</h2><p>Agrega productos para finalizar tu compra.</p><a class="btn-primary" href="catalogo.html">Ir al catálogo</a></div>'; return; }
-    const cities = ['Bogotá D.C.', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga', 'Cúcuta', 'Pereira', 'Manizales', 'Armenia', 'Ibagué', 'Villavicencio', 'Santa Marta', 'Neiva', 'Pasto', 'Popayán', 'Tunja', 'Montería', 'Valledupar', 'Sincelejo', 'Soacha', 'Chía', 'Bello', 'Envigado', 'Itagüí', 'Palmira', 'Floridablanca', 'Girardón'].filter(x => x !== 'Girardón');
-    const pm = [['transferencia', 'fa-building-columns', 'Transferencia, Nequi o Llave', 'Pagas desde tu app y nos envías el comprobante.', cfg.transferencia.activo !== false],
-                ['wompi', 'fa-credit-card', 'Tarjeta, PSE y más (Wompi)', cfg.wompi.activo && cfg.wompi.endpoint ? 'Pago inmediato y seguro en Wompi.' : 'Te enviamos un link de pago seguro de Wompi.', true],
-                ['addi', 'fa-hand-holding-dollar', 'Paga a cuotas con Addi', cfg.addi.activo && cfg.addi.endpoint ? 'Compra ahora y paga después (sujeto a aprobación).' : 'Te enviamos el link de Addi para tu solicitud.', true]].filter(x => x[4]);
+    let srv = null;
+    if (api) { try { const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 5000); const r = await fetch(api + '/api/config', { signal: ctl.signal }); clearTimeout(tm); if (r.ok) srv = (await r.json()).metodos; } catch (e) {} }
+    const online = !!srv, pm = [];
+    if (cfg.transferencia.activo !== false) pm.push(['transferencia', 'fa-building-columns', 'Transferencia, Nequi o Llave', 'Pagas desde tu app y nos envías el comprobante.']);
+    const subNow = cart.reduce((a, i) => a + unitPrice(i) * i.qty, 0), tMax = Number(cfg.maximoTarjeta) || 0, tOk = !tMax || subNow <= tMax;
+    const addPm = (id, icon, name, on) => { if (tOk && online && srv[id]) pm.push([id, icon, name, on]); };
+    addPm('wompi', 'fa-credit-card', 'Tarjeta, PSE y más (Wompi)', 'Pago inmediato y seguro en Wompi.');
+    addPm('bold', 'fa-wallet', 'Tarjeta, PSE y Nequi (Bold)', 'Pago inmediato y seguro en Bold.');
+    addPm('epayco', 'fa-credit-card', 'Tarjeta, PSE y más (ePayco)', 'Pago inmediato y seguro en ePayco.');
+    addPm('addi', 'fa-hand-holding-dollar', 'Paga a cuotas con Addi', 'Compra ahora y paga después (sujeto a aprobación). Compras de $50.000 a $3.000.000.');
+    const epOn = !!(cfg.epayco.activo && cfg.epayco.llavePublica);
+    if (epOn && tOk) pm.push(['epaycoweb', 'fa-credit-card', 'Tarjeta, PSE y más (ePayco)', 'Pagas seguro en la ventana de ePayco, sin salir de la tienda.']);
+    if (cfg.linkPago.activo && tOk) pm.push(['link', 'fa-credit-card', 'Tarjeta de crédito, débito o PSE', 'Te enviamos un link de pago seguro' + (cfg.linkPago.nombre ? ' de ' + cfg.linkPago.nombre : '') + '.']);
     root.innerHTML = `<div class="co-grid">
       <form id="coForm" class="co-form" novalidate>
         <section class="co-card"><h2><span>1</span> Tus datos</h2>
           <div class="co-row"><label>Nombre completo<input id="coNombre" autocomplete="name" required></label><label>Teléfono o WhatsApp<input id="coTel" inputmode="tel" autocomplete="tel" required></label></div>
-          <div class="co-row"><label>Correo electrónico<input id="coEmail" type="email" autocomplete="email" required></label><label>Documento <small>(opcional, si necesitas factura)</small><input id="coDoc" inputmode="numeric"></label></div>
+          <div class="co-row"><label>Correo electrónico<input id="coEmail" type="email" autocomplete="email" required></label><label>Documento <small>${online && srv.addi ? '(obligatorio si pagas con Addi)' : '(opcional, si necesitas factura)'}</small><input id="coDoc" inputmode="numeric"></label></div>
         </section>
         <section class="co-card"><h2><span>2</span> Entrega</h2>
           <div class="co-row"><label>Ciudad<input id="coCiudad" list="coCities" autocomplete="address-level2" placeholder="Ej. Bogotá D.C." required></label><label id="coDeptoBox" hidden>Departamento<input id="coDepto" autocomplete="address-level1"></label></div>
-          <datalist id="coCities">${cities.map(c => `<option value="${c}">`).join('')}</datalist>
+          <datalist id="coCities">${CITIES.map(c => `<option value="${c}">`).join('')}</datalist>
           <label>Dirección de entrega<input id="coDir" autocomplete="street-address" placeholder="Calle, número, barrio, apartamento…" required></label>
           <label>Indicaciones <small>(opcional)</small><input id="coNotas" placeholder="Torre, portería, horario…"></label>
           <p class="co-ship" id="coShipMsg"></p>
         </section>
         <section class="co-card"><h2><span>3</span> Método de pago</h2>
-          <div class="co-pay">${pm.map((m, i) => `<label class="co-pm"><input type="radio" name="coPay" value="${m[0]}" ${i === 0 ? 'checked' : ''}><span class="co-pm-in"><i class="fa-solid ${m[1]}"></i><b>${m[2]}</b><small>${m[3]}</small></span></label>`).join('')}</div>
+          <div class="co-pay">${pm.map((m, i) => `<label class="co-pm"><input type="radio" name="coPay" value="${m[0]}" ${i === 0 ? 'checked' : ''}><span class="co-pm-in"><i class="fa-solid ${m[1]}"></i><b>${m[2]}</b><small>${m[3]}</small></span></label>`).join('')}</div>${api && !online ? '<p class="co-note">Los pagos con tarjeta y PSE no están disponibles en este momento. Puedes pagar por transferencia o escribirnos por WhatsApp.</p>' : ''}${!tOk && (online || cfg.linkPago.activo || epOn) ? `<p class="co-note">Para compras de más de ${fmt(tMax)} el pago es por transferencia, Nequi o Llave (sin costo adicional para ti).</p>` : ''}
         </section>
         <section class="co-card co-consent"><label class="co-check"><input type="checkbox" id="coAcepto"><span>He leído y acepto los <a href="terminos.html" target="_blank">términos y condiciones</a>, la política de <a href="garantias.html" target="_blank">garantías y devoluciones</a> y la <a href="privacidad.html" target="_blank">política de datos</a>.</span></label><p class="co-err" id="coAceptoErr"></p></section>
-        <button type="submit" class="co-submit" id="coSubmit"><i class="fa-solid fa-lock"></i> Confirmar pedido</button>
-        <p class="co-hint">Pagas solo después de confirmar. No pedimos datos de tarjeta en esta página.</p>
+        <p class="co-err co-form-err" id="coFormErr" hidden></p>
+        <button type="submit" class="co-submit" id="coSubmit"><i class="fa-solid fa-lock"></i> ${online ? 'Continuar al pago' : 'Confirmar pedido'}</button>
+        <p class="co-hint">${online ? 'Te llevamos a la plataforma de pago segura. No pedimos datos de tarjeta en esta página.' : 'Pagas solo después de confirmar. No pedimos datos de tarjeta en esta página.'}</p>
       </form>
       <aside class="co-summary"><h2>Resumen del pedido</h2><div id="coItems"></div><div class="co-tot"><div><span>Subtotal</span><b id="coSub"></b></div><div><span>Envío</span><b id="coShip"></b></div><div class="co-total"><span>Total</span><b id="coTotal"></b></div></div><button type="button" class="co-edit" onclick="toggleCart(true)"><i class="fa-solid fa-pen"></i> Editar carrito</button></aside>
     </div>`;
@@ -627,46 +654,127 @@ function renderCheckout(){
     $('coCiudad').addEventListener('input', refresh); refresh();
     track('begin_checkout', { currency: 'COP', value: sub(), items: cart.map(i => gaItem(getP(i.id), itemName(i), i.qty)) });
     const err = (el, msg) => { el.classList.toggle('bad', !!msg); let n = el.parentElement.querySelector('.co-err'); if (!n && msg) { n = document.createElement('p'); n.className = 'co-err'; el.after(n); } if (n) n.textContent = msg || ''; return !msg; };
+    const btnTxt = () => `<i class="fa-solid fa-lock"></i> ${online ? 'Continuar al pago' : 'Confirmar pedido'}`;
+    const formError = (j, e) => { const m = PAY_ERR[j.error]; let t = typeof m === 'function' ? m(j) : m; if (j.error === 'precio_cambio') t = `El precio cambió: el total ahora es ${fmt(j.total)}. Actualiza la página (Cmd/Ctrl + Shift + R) para ver los precios nuevos y vuelve a intentar.`; if (!t) t = 'No pudimos crear tu pedido. Intenta de nuevo o escríbenos por WhatsApp.'; const b = $('coFormErr'); b.textContent = t; b.hidden = false; b.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
     $('coForm').addEventListener('submit', async e => {
-        e.preventDefault(); let ok = true, first = null;
+        e.preventDefault(); $('coFormErr').hidden = true; let ok = true, first = null;
         const need = (id, test, msg) => { const el = $(id), good = test(el.value.trim()); if (!err(el, good ? '' : msg)) { ok = false; first = first || el; } };
         need('coNombre', v => v.length >= 5 && v.includes(' '), 'Escribe tu nombre y apellido.'); need('coTel', v => v.replace(/\D/g, '').length >= 7, 'Escribe un teléfono válido.');
         need('coEmail', v => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v), 'Escribe un correo válido.'); need('coCiudad', v => v.length >= 3, 'Escribe tu ciudad.'); need('coDir', v => v.length >= 8, 'Escribe tu dirección completa.');
+        const metodo = document.querySelector('input[name=coPay]:checked').value;
+        if (online && metodo === 'addi') need('coDoc', v => v.replace(/\D/g, '').length >= 5, 'Para Addi necesitamos tu número de documento.');
         if (!$('coAcepto').checked) { $('coAceptoErr').textContent = 'Debes aceptar los términos para continuar.'; ok = false; first = first || $('coAcepto'); } else $('coAceptoErr').textContent = '';
         if (!ok) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-        const { s, sh } = refresh(), metodo = document.querySelector('input[name=coPay]:checked').value, d = new Date();
-        const ref = 'NT-' + String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
-        const o = { ref, fecha: d.toISOString(), estado: 'pendiente_pago', metodo, cliente: { nombre: $('coNombre').value.trim(), tel: $('coTel').value.trim(), email: $('coEmail').value.trim(), doc: $('coDoc').value.trim() },
-            entrega: { ciudad: $('coCiudad').value.trim(), depto: $('coDepto').value.trim(), direccion: $('coDir').value.trim(), notas: $('coNotas').value.trim() },
-            items: cart.map(i => ({ id: i.id, title: getP(i.id).title, variant: itemName(i), qty: i.qty, price: unitPrice(i) })), subtotal: s, envio: sh.cost, total: s + (sh.cost || 0) };
-        orders.push(o); try { localStorage.setItem('nikotech_orders', JSON.stringify(orders.slice(-20))); } catch (x) {}
-        track('add_payment_info', { currency: 'COP', value: o.total, payment_type: metodo });
-        if (cfg.pedidosEndpoint) { try { fetch(cfg.pedidosEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(o) }).catch(() => {}); } catch (x) {} }
-        const live = (metodo === 'wompi' && cfg.wompi.activo && cfg.wompi.endpoint) || (metodo === 'addi' && cfg.addi.activo && cfg.addi.endpoint);
-        if (live && o.envio !== null) {
-            const btn = $('coSubmit'); btn.disabled = true; btn.textContent = 'Conectando con la pasarela…';
+        const { s, sh } = refresh(), d = new Date();
+        const cliente = { nombre: $('coNombre').value.trim(), tel: $('coTel').value.trim(), email: $('coEmail').value.trim(), doc: $('coDoc').value.trim() };
+        const entrega = { ciudad: $('coCiudad').value.trim(), depto: $('coDepto').value.trim(), direccion: $('coDir').value.trim(), notas: $('coNotas').value.trim() };
+        const raw = cart.map(i => ({ id: i.id, opt: i.opt || '', color: i.color || '', qty: i.qty }));
+        track('add_payment_info', { currency: 'COP', value: s + (sh.cost || 0), payment_type: metodo });
+        if (online) {
+            const btn = $('coSubmit'); btn.disabled = true; btn.textContent = 'Procesando…';
             try {
-                const r = await fetch((metodo === 'wompi' ? cfg.wompi : cfg.addi).endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
-                const j = await r.json(); if (!j.url) throw new Error('sin url'); cart = []; saveCart(); updateCartUI(); window.location.href = j.url; return;
-            } catch (x) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-lock"></i> Confirmar pedido'; }
+                const r = await fetch(api + '/api/pedido', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: raw, metodo, cliente, entrega, totalCliente: sh.cost === null ? undefined : s + sh.cost }) });
+                const j = await r.json().catch(() => ({ error: 'error_interno' }));
+                if (!r.ok) { btn.disabled = false; btn.innerHTML = btnTxt(); formError(j); return; }
+                const o = { ref: j.ref, fecha: d.toISOString(), estado: j.estado || 'pendiente', metodo, cliente, entrega, items: j.items, subtotal: j.subtotal, envio: j.envioPorConfirmar ? null : j.envio, total: j.total, raw, srv: true };
+                orders.push(o); save(); cart = []; saveCart(); updateCartUI();
+                try { localStorage.setItem('nikotech_last_pedido', j.ref); } catch (x) {}
+                if (j.url) { window.location.href = j.url; return; }
+                if (j.epayco) { epaycoOpen(j.epayco, j.ref); return; }
+                try { history.replaceState(null, '', 'checkout.html?pedido=' + j.ref); } catch (x) {}
+                showDone(o, root, cfg); window.scrollTo({ top: 0, behavior: 'smooth' }); return;
+            } catch (x) { btn.disabled = false; btn.innerHTML = btnTxt(); const b = $('coFormErr'); b.textContent = 'No pudimos conectar con el servidor de pagos. Te dejamos tu pedido listo para confirmarlo por WhatsApp.'; b.hidden = false; }
         }
+        if (metodo === 'epaycoweb' && sh.cost === null) { formError({ error: 'envio_por_confirmar' }); return; }
+        const ref = 'NT-' + String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+        const o = { ref, fecha: d.toISOString(), estado: 'pendiente_pago', metodo, cliente, entrega,
+            items: cart.map(i => ({ id: i.id, title: getP(i.id).title, variant: itemName(i), qty: i.qty, price: unitPrice(i) })), subtotal: s, envio: sh.cost, total: s + (sh.cost || 0), raw };
+        orders.push(o); save();
+        if (metodo === 'epaycoweb') { cart = []; saveCart(); updateCartUI(); epaycoWeb(cfg, o); return; }
+        if (cfg.pedidosEndpoint) { try { fetch(cfg.pedidosEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(o) }).catch(() => {}); } catch (x) {} }
         cart = []; saveCart(); updateCartUI(); try { history.replaceState(null, '', 'checkout.html?pedido=' + ref); } catch (x) {}
         showDone(o, root, cfg); window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
-function showDone(o, root, cfg){
+function epaycoWeb(cfg, o){
+    const back = () => { window.location.href = 'checkout.html?pedido=' + o.ref; };
+    const run = () => {
+        try {
+            const h = ePayco.checkout.configure({ key: cfg.epayco.llavePublica, test: cfg.epayco.pruebas !== false });
+            h.onCloseModal = () => back();
+            const c = o.cliente, e = o.entrega, doc = String(c.doc || '').replace(/\D/g, '');
+            const data = { name: 'Nikotechsolutions', description: ('Pedido ' + o.ref + ' - ' + o.items.map(i => i.title).join(', ')).slice(0, 100), invoice: o.ref, currency: 'cop', amount: o.total, tax_base: '0', tax: '0', country: 'co', lang: 'es', external: 'false', method: 'GET', extra1: o.ref, extra2: e.ciudad,
+                response: location.origin + location.pathname.replace(/[^/]*$/, '') + 'checkout.html?pedido=' + o.ref, name_billing: c.nombre, address_billing: e.direccion, mobilephone_billing: String(c.tel).replace(/\D/g, '') };
+            if (doc) { data.type_doc_billing = 'cc'; data.number_doc_billing = doc; }
+            h.open(data);
+        } catch (x) { back(); }
+    };
+    if (window.ePayco && window.ePayco.checkout) return run();
+    const s = document.createElement('script'); s.src = 'https://checkout.epayco.co/checkout.js'; s.onload = run; s.onerror = back; document.head.appendChild(s);
+}
+async function epaycoRetorno(root, cfg, o, rp){
+    root.innerHTML = '<div class="co-empty"><i class="fa-solid fa-spinner fa-spin"></i><h2>Verificando tu pago…</h2><p>Un momento, consultamos con ePayco.</p></div>';
+    if (rp) {
+        try {
+            const r = await fetch('https://secure.epayco.co/validation/v1/reference/' + encodeURIComponent(rp)), j = await r.json(), d = j && j.data;
+            if (d && String(d.x_id_invoice || d.x_extra1) === o.ref) {
+                const c = String(d.x_cod_transaction_state != null ? d.x_cod_transaction_state : d.x_cod_response);
+                if (c === '1' && Number(d.x_amount) === o.total) o.estado = 'aprobado_epayco'; else if (['2', '4', '10', '11', '12'].includes(c)) o.estado = 'rechazado';
+                try { const all = JSON.parse(localStorage.getItem('nikotech_orders') || '[]'); const i = all.findIndex(x => x.ref === o.ref); if (i >= 0) { all[i] = o; localStorage.setItem('nikotech_orders', JSON.stringify(all)); } } catch (e) {}
+            }
+        } catch (e) { /* sin conexión con ePayco: queda en "confirmando" */ }
+    }
+    showDone(o, root, cfg);
+}
+function epaycoOpen(ep, ref){
+    const go = rp => { window.location.href = 'checkout.html?pedido=' + ref + (rp ? '&ref_payco=' + encodeURIComponent(rp) : ''); };
+    const run = () => {
+        let done = false; const fin = r => { if (done) return; done = true; go(r && (r.x_ref_payco || r.ref_payco || (r.data && (r.data.x_ref_payco || r.data.ref_payco)))); };
+        try {
+            const ck = ePayco.checkout.configure({ sessionId: ep.sessionId, type: 'onpage', test: !!ep.test });
+            ck.setHooks({ onResponse: r => fin(r), onClosed: () => fin(), onErrors: () => fin() }); ck.open();
+        } catch (e) { go(''); }
+    };
+    if (window.ePayco && window.ePayco.checkout) return run();
+    const s = document.createElement('script'); s.src = 'https://checkout.epayco.co/checkout-v2.js'; s.onload = run; s.onerror = () => go(''); document.head.appendChild(s);
+}
+async function resultadoPago(root, cfg, api, orders, save, wid, pref, rp){
+    root.innerHTML = '<div class="co-empty"><i class="fa-solid fa-spinner fa-spin"></i><h2>Verificando tu pago…</h2><p>Un momento, estamos consultando con la plataforma de pago.</p></div>';
+    let st = null;
+    try { const r = await fetch(api + '/api/estado?' + (wid ? 'id=' + encodeURIComponent(wid) : 'ref=' + encodeURIComponent(pref) + (rp ? '&epayco=' + encodeURIComponent(rp) : ''))); const j = await r.json(); if (r.ok) st = j; } catch (e) {}
+    const ref = (st && st.ref) || pref || (() => { try { return localStorage.getItem('nikotech_last_pedido'); } catch (e) { return null; } })();
+    let o = orders.find(x => x.ref === ref);
+    if (!o && st) o = { ref: st.ref, estado: st.estado, metodo: st.metodo, items: st.items, subtotal: st.subtotal, envio: st.envio, total: st.total, cliente: { nombre: '', tel: '', email: '' }, entrega: { direccion: '', ciudad: '' }, srv: true };
+    if (!o) { root.innerHTML = `<div class="co-empty"><i class="fa-solid fa-circle-question"></i><h2>No encontramos tu pedido</h2><p>Si ya pagaste, escríbenos por <a href="${waLink('Hola, hice un pago y no veo mi pedido.')}" target="_blank" rel="noopener">WhatsApp</a> y lo revisamos.</p><a class="btn-primary" href="catalogo.html">Ir al catálogo</a></div>`; return; }
+    if (st) { o.estado = st.estado; save(); }
+    showDone(o, root, cfg, !st);
+}
+function showDone(o, root, cfg, unverified){
     const t = cfg.transferencia, total = o.envio === null ? fmt(o.subtotal) + ' + envío por confirmar' : fmt(o.total);
     const acc = [];
-    (t.bancos || []).forEach(b => { if (b && b.numero) acc.push(`<div class="pay-row"><i class="fa-solid fa-building-columns"></i><div><b>${esc(b.banco || 'Banco')} · ${esc(b.tipo || '')}</b><span>${esc(b.numero)}${t.titular ? ' · ' + esc(t.titular) : ''}</span></div></div>`); });
+    (t.bancos || []).forEach(b => { if (b && b.numero) acc.push(`<div class="pay-row"><i class="fa-solid fa-building-columns"></i><div><b>${esc(b.banco || 'Banco')} · ${esc(b.tipo || '')}</b><span>${esc(b.numero)}${t.titular ? ' · Titular: ' + esc(t.titular) : ''}</span></div></div>`); });
     if (t.nequi) acc.push(`<div class="pay-row"><i class="fa-solid fa-mobile-screen"></i><div><b>Nequi</b><span>${esc(t.nequi)}</span></div></div>`);
     if (t.llave) acc.push(`<div class="pay-row"><i class="fa-solid fa-key"></i><div><b>Llave</b><span>${esc(t.llave)}</span></div></div>`);
     const mail = `mailto:${SITE.email}?subject=${encodeURIComponent('Pedido ' + o.ref)}&body=${encodeURIComponent(orderMsg(o, 'Adjunto mi comprobante de pago.'))}`;
-    let block;
-    if (o.metodo === 'transferencia') block = `<h3>Cómo pagar</h3><p>Transfiere <b>${total}</b> y escribe <b>${o.ref}</b> como referencia o descripción.</p>${acc.length ? acc.join('') : '<p class="co-note">Te enviamos los datos de pago por WhatsApp o correo apenas recibamos tu mensaje.</p>'}<a class="btn-primary co-wa" target="_blank" rel="noopener" href="${waLink(orderMsg(o, 'Hice mi pedido y te envío el comprobante de pago.'))}"><i class="fa-brands fa-whatsapp"></i> Enviar comprobante por WhatsApp</a><a class="btn-ghost" href="${mail}"><i class="fa-solid fa-envelope"></i> Enviarlo por correo</a>`;
-    else block = `<h3>${o.metodo === 'wompi' ? 'Tu link de pago de Wompi' : 'Tu solicitud con Addi'}</h3><p>Te enviamos ${o.metodo === 'wompi' ? 'un <b>link de pago seguro de Wompi</b>' : 'el <b>link para solicitar tu crédito con Addi</b>'} por WhatsApp o correo. Pulsa el botón para recibirlo ya.</p><a class="btn-primary co-wa" target="_blank" rel="noopener" href="${waLink(orderMsg(o, o.metodo === 'wompi' ? 'Quiero pagar mi pedido con Wompi. ¿Me envías el link de pago?' : 'Quiero pagar mi pedido a cuotas con Addi. ¿Me envías el link?'))}"><i class="fa-brands fa-whatsapp"></i> Recibir mi link ${o.metodo === 'wompi' ? 'de Wompi' : 'de Addi'}</a><a class="btn-ghost" href="${mail}"><i class="fa-solid fa-envelope"></i> Pedirlo por correo</a>`;
-    root.innerHTML = `<div class="co-done"><div class="co-ok"><i class="fa-solid fa-circle-check"></i></div><h2>¡Pedido recibido!</h2><p>Tu número de pedido es <b class="co-ref" id="coRef">${o.ref}</b> <button class="co-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${o.ref}');this.textContent='Copiado'">Copiar</button></p>
-      <div class="co-done-grid"><div class="co-card">${block}</div><div class="co-card"><h3>Resumen</h3>${o.items.map(i => `<div class="co-item"><div><b>${esc(i.title)}</b>${i.variant ? `<small>${esc(i.variant)}</small>` : ''}<span>${i.qty} × ${fmt(i.price)}</span></div><em>${fmt(i.qty * i.price)}</em></div>`).join('')}<div class="co-tot"><div><span>Subtotal</span><b>${fmt(o.subtotal)}</b></div><div><span>Envío</span><b>${o.envio === null ? 'Por confirmar' : (o.envio ? fmt(o.envio) : 'Gratis')}</b></div><div class="co-total"><span>Total</span><b>${total}</b></div></div><p class="co-note">Entrega en ${esc(o.entrega.direccion)}, ${esc(o.entrega.ciudad)}.<br>Tu pedido queda pendiente hasta confirmar el pago.</p></div></div>
+    const est = o.estado || 'pendiente', gw = o.srv && ['wompi', 'bold', 'addi', 'epayco'].includes(o.metodo), nombreM = o.metodo === 'link' ? (cfg.linkPago.nombre || '') : ({ wompi: 'Wompi', bold: 'Bold', addi: 'Addi', epayco: 'ePayco' }[o.metodo] || '');
+    let icon = 'fa-circle-check', cls = '', head = '¡Pedido recibido!', block;
+    if (gw && est === 'pagado') { head = '¡Pago aprobado!'; block = `<h3>Gracias por tu compra</h3><p>Recibimos tu pago por ${nombreM}. Preparamos tu pedido y te escribimos con el seguimiento del envío.</p><a class="btn-ghost" href="catalogo.html">Seguir comprando</a>`; }
+    else if (gw && ['rechazado', 'expirado', 'anulado'].includes(est)) { icon = 'fa-circle-xmark'; cls = ' bad'; head = 'No se completó el pago'; block = `<h3>El pago no se pudo procesar</h3><p>${est === 'expirado' ? 'El link de pago venció.' : 'La plataforma no aprobó el pago.'} No se hizo ningún cobro por este intento.</p>${o.raw ? '<button class="btn-primary co-retry" id="coRetry">Intentar de nuevo</button>' : ''}<a class="btn-ghost" target="_blank" rel="noopener" href="${waLink(orderMsg(o, 'Mi pago no se completó, ¿me ayudas?'))}"><i class="fa-brands fa-whatsapp"></i> Pedir ayuda por WhatsApp</a>`; }
+    else if (gw) { icon = 'fa-clock'; cls = ' wait'; head = 'Estamos confirmando tu pago'; block = `<h3>Esperando la confirmación de ${nombreM}</h3><p>${unverified ? 'No pudimos consultar el estado ahora mismo. ' : ''}Si ya pagaste, la confirmación llega en unos minutos y te avisamos. Puedes actualizar el estado.</p><button class="btn-primary co-retry" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Actualizar estado</button>${o.raw ? '<button class="btn-ghost co-retry" id="coRetry">¿No terminaste el pago? Intentar de nuevo</button>' : ''}<a class="btn-ghost" target="_blank" rel="noopener" href="${waLink(orderMsg(o, 'Ya hice mi pago, ¿me confirmas?'))}"><i class="fa-brands fa-whatsapp"></i> Avisarnos por WhatsApp</a>`; }
+    else if (o.metodo === 'epaycoweb') {
+        const wa = waLink(orderMsg(o, 'Pagué mi pedido con ePayco (tarjeta/PSE). Te envío mis datos para coordinar el envío.')), retry = o.raw ? '<button class="btn-ghost co-retry" id="coRetry">¿No terminaste el pago? Pagar de nuevo</button>' : '';
+        if (est === 'aprobado_epayco') { head = '¡Pago recibido!'; block = `<h3>ePayco aprobó tu pago</h3><p>Recibimos tu pago. Para coordinar el envío, envíanos tu pedido por WhatsApp (o te escribimos nosotros).</p><a class="btn-primary co-wa" target="_blank" rel="noopener" href="${wa}"><i class="fa-brands fa-whatsapp"></i> Enviar mi pedido por WhatsApp</a>`; }
+        else if (est === 'rechazado') { icon = 'fa-circle-xmark'; cls = ' bad'; head = 'No se completó el pago'; block = `<h3>El pago no se pudo procesar</h3><p>No se hizo ningún cobro por este intento. Puedes intentarlo de nuevo o pagar por transferencia, Nequi o Llave.</p>${retry}<a class="btn-ghost" target="_blank" rel="noopener" href="${wa}"><i class="fa-brands fa-whatsapp"></i> Pedir ayuda por WhatsApp</a>`; }
+        else { icon = 'fa-clock'; cls = ' wait'; head = 'Estamos confirmando tu pago'; block = `<h3>Esperando la confirmación de ePayco</h3><p>Si ya pagaste, verificamos tu pago en ePayco. Envíanos tu pedido por WhatsApp para coordinar el envío.</p><a class="btn-primary co-wa" target="_blank" rel="noopener" href="${wa}"><i class="fa-brands fa-whatsapp"></i> Enviar mi pedido por WhatsApp</a>${retry}`; }
+    }
+    else if (o.metodo === 'link') block = `<h3>Tu link de pago${nombreM ? ' de ' + esc(nombreM) : ''}</h3><p>Te enviamos un <b>link de pago seguro</b> para pagar con tarjeta de crédito, débito o PSE por WhatsApp o correo. Pulsa el botón para recibirlo ya. Pagas en la plataforma de pago; nosotros no vemos los datos de tu tarjeta.</p><a class="btn-primary co-wa" target="_blank" rel="noopener" href="${waLink(orderMsg(o, 'Quiero pagar mi pedido con tarjeta o PSE. ¿Me envías el link de pago?'))}"><i class="fa-brands fa-whatsapp"></i> Recibir mi link de pago</a><a class="btn-ghost" href="${mail}"><i class="fa-solid fa-envelope"></i> Pedirlo por correo</a>`;
+    else if (o.metodo === 'transferencia') block = `<h3>Cómo pagar</h3><p>Transfiere <b>${total}</b> y escribe <b>${o.ref}</b> como referencia o descripción.</p>${acc.length ? acc.join('') : '<p class="co-note">Te enviamos los datos de pago por WhatsApp o correo apenas recibamos tu mensaje.</p>'}<a class="btn-primary co-wa" target="_blank" rel="noopener" href="${waLink(orderMsg(o, 'Hice mi pedido y te envío el comprobante de pago.'))}"><i class="fa-brands fa-whatsapp"></i> Enviar comprobante por WhatsApp</a><a class="btn-ghost" href="${mail}"><i class="fa-solid fa-envelope"></i> Enviarlo por correo</a>`;
+    else block = `<h3>${o.metodo === 'addi' ? 'Tu solicitud con Addi' : 'Tu link de pago de ' + nombreM}</h3><p>Te enviamos ${o.metodo === 'addi' ? 'el <b>link para solicitar tu crédito con Addi</b>' : 'un <b>link de pago seguro de ' + nombreM + '</b>'} por WhatsApp o correo. Pulsa el botón para recibirlo ya.</p><a class="btn-primary co-wa" target="_blank" rel="noopener" href="${waLink(orderMsg(o, o.metodo === 'addi' ? 'Quiero pagar mi pedido a cuotas con Addi. ¿Me envías el link?' : 'Quiero pagar mi pedido con ' + nombreM + '. ¿Me envías el link de pago?'))}"><i class="fa-brands fa-whatsapp"></i> Recibir mi link${o.metodo === 'addi' ? ' de Addi' : ' de ' + nombreM}</a><a class="btn-ghost" href="${mail}"><i class="fa-solid fa-envelope"></i> Pedirlo por correo</a>`;
+    root.innerHTML = `<div class="co-done"><div class="co-ok${cls}"><i class="fa-solid ${icon}"></i></div><h2>${head}</h2><p>Tu número de pedido es <b class="co-ref" id="coRef">${o.ref}</b> <button class="co-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${o.ref}');this.textContent='Copiado'">Copiar</button></p>
+      <div class="co-done-grid"><div class="co-card">${block}</div><div class="co-card"><h3>Resumen</h3>${o.items.map(i => `<div class="co-item"><div><b>${esc(i.title)}</b>${i.variant ? `<small>${esc(i.variant)}</small>` : ''}<span>${i.qty} × ${fmt(i.price)}</span></div><em>${fmt(i.qty * i.price)}</em></div>`).join('')}<div class="co-tot"><div><span>Subtotal</span><b>${fmt(o.subtotal)}</b></div><div><span>Envío</span><b>${o.envio === null ? 'Por confirmar' : (o.envio ? fmt(o.envio) : 'Gratis')}</b></div><div class="co-total"><span>Total</span><b>${total}</b></div></div>${o.entrega && o.entrega.direccion ? `<p class="co-note">Entrega en ${esc(o.entrega.direccion)}, ${esc(o.entrega.ciudad)}.</p>` : ''}</div></div>
       <p class="co-hint">¿Algo no está bien? Escríbenos por <a href="${waLink('Hola, tengo una duda con mi pedido ' + o.ref)}" target="_blank" rel="noopener">WhatsApp</a>. Conoce nuestras <a href="garantias.html">garantías</a> y <a href="envios.html">envíos</a>.</p></div>`;
+    const rb = document.getElementById('coRetry');
+    if (rb) rb.onclick = () => { cart = o.raw.map(r => ({ id: r.id, opt: r.opt, color: r.color, qty: r.qty })); saveCart(); updateCartUI(); window.location.href = 'checkout.html'; };
 }
 
 /* ---------- ESTADÍSTICAS DE VISITAS (opcional: se activan desde ajustes.js / panel) ---------- */
@@ -996,7 +1104,7 @@ function renderTrust(){
     const box = document.getElementById('trustBar'); if (!box) return;
     const items = [
         ['boxes-stacked', '+' + products.length + ' productos', 'Celulares, computación, audio y más'],
-        ['credit-card', 'Paga como prefieras', 'Transferencia, Nequi y Llave' + (payCfg().wompi.activo ? ', Wompi' : '') + (payCfg().addi.activo ? ' y Addi' : '')],
+        ['credit-card', 'Paga como prefieras', payCfg().api ? 'Tarjeta, PSE, Nequi, transferencia y cuotas' : ('Transferencia, Nequi y Llave' + ((payCfg().linkPago.activo || (payCfg().epayco.activo && payCfg().epayco.llavePublica)) ? ', tarjeta y PSE' : ''))],
         ['truck-fast', 'Envío gratis en Bogotá', 'Y envíos a todo el país'],
         ['file-invoice', 'Cotización formal', 'Para empresas y compras por volumen']
     ];
